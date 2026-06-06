@@ -38,11 +38,15 @@ Required Jenkins parameters:
 - `ENABLE_VIDEO`: `true`.
 - `VIDEO_STORAGE_URL`: public URL where Selenoid stores mp4 files.
 
+For Jenkins UI runs, use `REMOTE_URL=https://<login>:<password>@selenoid.autotests.cloud/wd/hub`.
+Clear `REMOTE_URL` only when the Jenkins agent has a local browser installed.
+`api_test` and emulator `mobile_test` do not use Selenoid.
+
 Example:
 
 ```bash
 gradle clean ui_test \
-  -DremoteUrl=https://selenoid.autotests.cloud/wd/hub \
+  -DremoteUrl=https://<login>:<password>@selenoid.autotests.cloud/wd/hub \
   -DenableVideo=true \
   -DvideoStorageUrl=https://selenoid.autotests.cloud/video/
 ```
@@ -65,10 +69,11 @@ Allure attachments include mobile screenshot, page source and BrowserStack video
 
 ## Telegram
 
-This project has two possible Telegram approaches:
+Telegram report is sent through Allure Notifications:
 
-- Jenkins pipeline notification through credentials `katy-telegram-bot-token` and `katy-telegram-chat-id`.
-- Allure Notifications configuration through `notifications.json`.
+- Jenkins credentials: `katy-telegram-bot-token` and `katy-telegram-chat-id`.
+- Template config: `notifications.json`.
+- Runtime config with real secrets is created only during the Jenkins build.
 
 Do not commit real Telegram tokens. Use Jenkins credentials or create a local non-committed copy.
 

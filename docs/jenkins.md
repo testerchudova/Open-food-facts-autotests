@@ -21,6 +21,7 @@ Create these credentials in Jenkins before running the job.
 | `katy-browserstack-access-key` | Secret text | BrowserStack access key |
 
 BrowserStack credentials are needed only for `mobile_test` with `DEVICE_HOST=browserstack`.
+Selenoid access is passed through the `REMOTE_URL` Jenkins parameter, for example `https://<login>:<password>@selenoid.autotests.cloud/wd/hub`.
 
 ## Pipeline parameters
 
@@ -31,7 +32,7 @@ BrowserStack credentials are needed only for `mobile_test` with `DEVICE_HOST=bro
 | `HEADLESS` | `true` | Headless mode for web UI tests |
 | `BROWSER_SIZE` | `1920x1080` | Browser window size for web UI tests |
 | `BROWSER_VERSION` | `100.0` | Browser version for remote UI runs; can be empty |
-| `REMOTE_URL` | `https://selenoid.autotests.cloud/wd/hub` | Remote WebDriver URL for Selenoid; empty means local browser |
+| `REMOTE_URL` | `https://<login>:<password>@selenoid.autotests.cloud/wd/hub` | Remote WebDriver URL for Selenoid; empty means local browser |
 | `ENABLE_VIDEO` | `true` | Enables UI video attachment when `REMOTE_URL` is set |
 | `VIDEO_STORAGE_URL` | `https://selenoid.autotests.cloud/video/` | Selenoid video storage URL |
 | `DEVICE_HOST` | `emulator`, `browserstack` | Mobile execution host, used for `mobile_test` |
@@ -46,7 +47,9 @@ The pipeline publishes:
 - JUnit XML results from `build/test-results`.
 - Allure report from `build/allure-results`.
 - Archived Allure raw results and local docs assets.
-- Telegram message with build status and Allure report link.
+- Telegram message with Allure chart, build status and Allure report link.
+
+The pipeline cleans old Allure and JUnit artifacts before every run so failed setup does not publish stale results from a previous build.
 
 ## UI video
 
@@ -55,17 +58,22 @@ UI tests can attach video to Allure when they run in Selenoid or another remote 
 Required Jenkins parameters:
 
 - `TEST_SUITE=ui_test`
-- `REMOTE_URL=https://selenoid.autotests.cloud/wd/hub`
+- `REMOTE_URL=https://<login>:<password>@selenoid.autotests.cloud/wd/hub`
 - `ENABLE_VIDEO=true`
 - `VIDEO_STORAGE_URL=https://selenoid.autotests.cloud/video/`
 
 The test base enables Selenoid capabilities `enableVNC` and `enableVideo`, then attaches an HTML video player to the Allure test result.
 
-For a regular local web UI run, leave `REMOTE_URL` empty and use:
+For Jenkins web UI runs, keep the default Selenoid value:
 
 - `TEST_SUITE=ui_test`
 - `WEB_BROWSER=chrome`
 - `HEADLESS=true`
+- `REMOTE_URL=https://<login>:<password>@selenoid.autotests.cloud/wd/hub`
+
+Without Selenoid login and password in `REMOTE_URL`, Selenoid responds with `401 Authorization Required`.
+
+For a local browser run on a machine with Chrome installed, clear `REMOTE_URL`.
 
 ## Mobile evidence
 
@@ -82,10 +90,11 @@ than the onboarding tutorial.
 
 ## Telegram
 
-Telegram can be configured in two ways:
+Telegram report is sent through `allure-notifications-4.11.0.jar` and `notifications.json`.
 
-- Jenkins credentials used by `Jenkinsfile`: `katy-telegram-bot-token` and `katy-telegram-chat-id`.
-- Allure Notifications template: `notifications.json`.
+- `katy-telegram-bot-token` and `katy-telegram-chat-id` are stored as Jenkins credentials.
+- `notifications.json` stays in Git with placeholders only.
+- During the Jenkins build, `Jenkinsfile` creates a temporary runtime config and removes it after sending the report.
 
 Keep real Telegram tokens outside Git. If a token was committed to a public repository before, revoke it in BotFather and create a new one.
 

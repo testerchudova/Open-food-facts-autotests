@@ -12,6 +12,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import qa.openfoodfacts.config.WebConfig;
 import qa.openfoodfacts.helpers.Attach;
 
+import java.util.Map;
+
 import static com.codeborne.selenide.WebDriverRunner.closeWebDriver;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 import static com.codeborne.selenide.WebDriverRunner.hasWebDriverStarted;
@@ -57,8 +59,10 @@ public class WebTestBase {
         Configuration.remote = CONFIG.remoteUrl();
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("enableVNC", true);
-        capabilities.setCapability("enableVideo", CONFIG.enableVideo());
+        capabilities.setCapability("selenoid:options", Map.of(
+                "enableVNC", true,
+                "enableVideo", CONFIG.enableVideo()
+        ));
         Configuration.browserCapabilities = capabilities;
     }
 

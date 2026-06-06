@@ -7,7 +7,7 @@ pipeline {
         booleanParam(name: 'HEADLESS', defaultValue: true, description: 'Run web UI tests in headless browser')
         string(name: 'BROWSER_SIZE', defaultValue: '1920x1080', description: 'Browser window size for UI tests')
         string(name: 'BROWSER_VERSION', defaultValue: '', description: 'Browser version for remote UI runs; leave empty for default')
-        string(name: 'REMOTE_URL', defaultValue: '', description: 'Remote WebDriver URL for Selenoid; leave empty for local browser')
+        string(name: 'REMOTE_URL', defaultValue: 'https://selenoid.autotests.cloud/wd/hub', description: 'Remote WebDriver URL for Selenoid; clear it only for local browser')
         booleanParam(name: 'ENABLE_VIDEO', defaultValue: true, description: 'Enable UI video when REMOTE_URL is configured')
         string(name: 'VIDEO_STORAGE_URL', defaultValue: 'https://selenoid.autotests.cloud/video/', description: 'Selenoid video storage URL')
         choice(name: 'DEVICE_HOST', choices: ['emulator', 'browserstack'], description: 'Mobile execution host for mobile_test only')
@@ -25,6 +25,8 @@ pipeline {
         stage('Prepare') {
             steps {
                 script {
+                    cleanReportArtifacts()
+
                     if (isUnix()) {
                         sh 'chmod +x gradlew'
                     }
@@ -43,7 +45,7 @@ pipeline {
                             runGradleTests(browserStackArgs())
                         }
                     } else {
-                        runGradleTests(commonArgs())
+                        runGradleTests(commonArgs(params.REMOTE_URL))
                     }
                 }
             }
@@ -53,8 +55,11 @@ pipeline {
     post {
         always {
             script {
-                publishReports()
-                notifyTelegram(currentBuild.currentResult)
+                if (publishReports()) {
+                    sendTelegramReport()
+                } else {
+                    echo 'No Allure test results were found. Telegram report is skipped.'
+                }
             }
         }
     }
@@ -74,13 +79,27 @@ def gradleExecutable() {
     return isUnix() ? './gradlew' : 'gradlew.bat'
 }
 
-def commonArgs() {
+def cleanReportArtifacts() {
+    if (isUnix()) {
+        sh '''
+            rm -rf build/allure-results build/test-results build/reports/tests allure-report notifications-runtime.json
+            mkdir -p build/allure-results
+        '''
+    } else {
+        powershell '''
+            Remove-Item "build/allure-results", "build/test-results", "build/reports/tests", "allure-report", "notifications-runtime.json" -Recurse -Force -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory -Force "build/allure-results" | Out-Null
+        '''
+    }
+}
+
+def commonArgs(String remoteUrl) {
     List args = [
             "-Dbrowser=${params.WEB_BROWSER}",
             "-Dheadless=${params.HEADLESS}",
             "-DbrowserSize=${params.BROWSER_SIZE}",
             "-DbrowserVersion=${params.BROWSER_VERSION}",
-            "-DremoteUrl=${params.REMOTE_URL}",
+            "-DremoteUrl=${remoteUrl}",
             "-DenableVideo=${params.ENABLE_VIDEO}",
             "-DvideoStorageUrl=${params.VIDEO_STORAGE_URL}",
             "-DdeviceHost=${params.DEVICE_HOST}",
@@ -93,7 +112,7 @@ def commonArgs() {
 
 def browserStackArgs() {
     List args = [
-            commonArgs(),
+            commonArgs(params.REMOTE_URL),
             "-DuserName=${env.BROWSERSTACK_USER}",
             "-DaccessKey=${env.BROWSERSTACK_KEY}",
             "-DbrowserstackApp=${params.BROWSERSTACK_APP}"
@@ -105,52 +124,120 @@ def browserStackArgs() {
 def publishReports() {
     junit allowEmptyResults: true, testResults: 'build/test-results/**/*.xml'
 
-    allure([
-            includeProperties: false,
-            jdk              : '',
-            properties       : [],
-            reportBuildPolicy: 'ALWAYS',
-            results          : [[path: env.ALLURE_RESULTS]]
-    ])
+    boolean hasResults = hasAllureResults()
+
+    if (hasResults) {
+        allure([
+                includeProperties: false,
+                jdk              : '',
+                properties       : [],
+                reportBuildPolicy: 'ALWAYS',
+                results          : [[path: env.ALLURE_RESULTS]]
+        ])
+    } else {
+        echo "No files were found in ${env.ALLURE_RESULTS}. Allure report publishing is skipped."
+    }
 
     archiveArtifacts allowEmptyArchive: true,
             artifacts: 'build/allure-results/**/*, build/reports/tests/**/*, docs/assets/screenshots/**/*, docs/assets/video/**/*'
+
+    return hasResults
 }
 
-def notifyTelegram(String status) {
+def hasAllureResults() {
+    if (isUnix()) {
+        return sh(script: "find '${env.ALLURE_RESULTS}' -type f -name '*-result.json' | grep -q .", returnStatus: true) == 0
+    }
+
+    return powershell(script: """
+        \$files = Get-ChildItem '${env.ALLURE_RESULTS}' -Filter '*-result.json' -File -ErrorAction SilentlyContinue
+        if (\$files.Count -gt 0) { exit 0 }
+        exit 1
+    """, returnStatus: true) == 0
+}
+
+def sendTelegramReport() {
     try {
         withCredentials([
                 string(credentialsId: 'katy-telegram-bot-token', variable: 'TELEGRAM_BOT_TOKEN'),
                 string(credentialsId: 'katy-telegram-chat-id', variable: 'TELEGRAM_CHAT_ID')
         ]) {
-            String message = """${env.PROJECT_NAME}
-Build: #${env.BUILD_NUMBER}
-Status: ${status}
-Suite: ${params.TEST_SUITE}
-Browser: ${params.WEB_BROWSER}
-Device host: ${params.DEVICE_HOST}
-Report: ${env.BUILD_URL}allure
-Job: ${env.BUILD_URL}"""
+            withEnv(["EXECUTION_ENVIRONMENT=${executionEnvironment()}"]) {
+                String configFile = 'notifications-runtime.json'
 
-            withEnv(["TELEGRAM_MESSAGE=${message}"]) {
-                if (isUnix()) {
-                    sh '''
-                        curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-                        -d chat_id="$TELEGRAM_CHAT_ID" \
-                        --data-urlencode text="$TELEGRAM_MESSAGE"
-                    '''
-                } else {
-                    powershell '''
-                        $body = @{
-                            chat_id = "$env:TELEGRAM_CHAT_ID"
-                            text = "$env:TELEGRAM_MESSAGE"
-                        }
-                        Invoke-RestMethod -Uri "https://api.telegram.org/bot$env:TELEGRAM_BOT_TOKEN/sendMessage" -Method Post -Body $body
-                    '''
+                try {
+                    writeTelegramRuntimeConfig(configFile)
+                    runAllureNotifications(configFile)
+                } finally {
+                    removeRuntimeConfig(configFile)
                 }
             }
         }
-    } catch (Exception ignored) {
-        echo 'Telegram credentials are not configured. Skipping Telegram notification.'
+    } catch (Exception error) {
+        echo "Allure Telegram notification was skipped: ${error}"
     }
+}
+
+def writeTelegramRuntimeConfig(String configFile) {
+    String runtimeConfig = readFile('notifications.json')
+            .replace('${TELEGRAM_BOT_TOKEN}', env.TELEGRAM_BOT_TOKEN ?: '')
+            .replace('${TELEGRAM_CHAT_ID}', env.TELEGRAM_CHAT_ID ?: '')
+            .replace('${BUILD_URL}', env.BUILD_URL ?: '')
+            .replace('${EXECUTION_ENVIRONMENT}', env.EXECUTION_ENVIRONMENT ?: executionEnvironment())
+
+    writeFile file: configFile, text: runtimeConfig, encoding: 'UTF-8'
+}
+
+def runAllureNotifications(String configFile) {
+    if (isUnix()) {
+        sh """
+            set +x
+            JAR_NAME="allure-notifications-4.11.0.jar"
+
+            if [ ! -f "\$JAR_NAME" ]; then
+                if command -v curl >/dev/null 2>&1; then
+                    curl -fsSL -o "\$JAR_NAME" "https://github.com/qa-guru/allure-notifications/releases/download/4.11.0/\$JAR_NAME"
+                else
+                    wget -q -O "\$JAR_NAME" "https://github.com/qa-guru/allure-notifications/releases/download/4.11.0/\$JAR_NAME"
+                fi
+            fi
+
+            java -DconfigFile="${configFile}" -jar "\$JAR_NAME"
+        """
+    } else {
+        powershell """
+            \$ErrorActionPreference = "Stop"
+            \$jarName = "allure-notifications-4.11.0.jar"
+
+            if (-not (Test-Path \$jarName)) {
+                Invoke-WebRequest -Uri "https://github.com/qa-guru/allure-notifications/releases/download/4.11.0/\$jarName" -OutFile \$jarName
+            }
+
+            java "-DconfigFile=${configFile}" -jar \$jarName
+        """
+    }
+}
+
+def removeRuntimeConfig(String configFile) {
+    if (isUnix()) {
+        sh "rm -f '${configFile}'"
+    } else {
+        powershell "Remove-Item '${configFile}' -Force -ErrorAction SilentlyContinue"
+    }
+}
+
+def executionEnvironment() {
+    if (params.TEST_SUITE == 'mobile_test') {
+        return params.DEVICE_HOST == 'browserstack' ? 'BrowserStack' : 'Android Emulator'
+    }
+
+    if (params.TEST_SUITE == 'ui_test') {
+        return params.REMOTE_URL?.trim() ? 'Selenoid' : "Local ${params.WEB_BROWSER}"
+    }
+
+    if (params.TEST_SUITE == 'api_test') {
+        return 'API / Jenkins'
+    }
+
+    return 'Jenkins'
 }

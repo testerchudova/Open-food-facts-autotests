@@ -1,10 +1,10 @@
 {
   "base": {
-    "project": "Open Food Facts Autotests",
-    "environment": "Jenkins / BrowserStack / Android Emulator",
+    "project": "Open Food Facts autotests",
+    "environment": "${EXECUTION_ENVIRONMENT}",
     "allureFolder": "allure-report",
     "logo": "https://allurereports.com/images/allure-logo.png",
-    "reportLink": "https://jenkins.example.com/job/open-food-facts-autotests/allure/",
+    "reportLink": "${BUILD_URL}allure",
     "language": "ru",
     "enableChart": true,
     "comment": "Запуск автотестов Open Food Facts в Jenkins завершен",

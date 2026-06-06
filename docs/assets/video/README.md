@@ -17,5 +17,7 @@ gradle clean ui_test -DremoteUrl=https://selenoid.example.com/wd/hub -DenableVid
 Mobile video is attached to Allure automatically when tests are executed in BrowserStack:
 
 ```bash
-gradle clean mobile_test -DdeviceHost=browserstack -DuserName=... -DaccessKey=... -DbrowserstackApp=bs://...
+gradle clean mobile_test -DdeviceHost=browserstack -DbrowserstackApp=bs://...
 ```
+
+In Jenkins, BrowserStack username, access key and app id are passed through environment variables.

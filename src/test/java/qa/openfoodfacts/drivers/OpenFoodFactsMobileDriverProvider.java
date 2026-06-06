@@ -37,7 +37,7 @@ public class OpenFoodFactsMobileDriverProvider implements WebDriverProvider {
         desiredCapabilities.setCapability("uiautomator2ServerLaunchTimeout", 120000);
 
         if ("browserstack".equalsIgnoreCase(CONFIG.deviceHost())) {
-            desiredCapabilities.setCapability("app", CONFIG.browserstackApp());
+            desiredCapabilities.setCapability("app", browserstackApp());
             desiredCapabilities.setCapability("bstack:options", browserstackOptions());
             return createAndroidDriver(CONFIG.browserstackUrl(), desiredCapabilities);
         }
@@ -55,12 +55,46 @@ public class OpenFoodFactsMobileDriverProvider implements WebDriverProvider {
 
     private static Map<String, Object> browserstackOptions() {
         Map<String, Object> options = new HashMap<>();
-        options.put("userName", CONFIG.userName());
-        options.put("accessKey", CONFIG.accessKey());
+        options.put("userName", browserstackUser());
+        options.put("accessKey", browserstackKey());
         options.put("projectName", "Open Food Facts autotests");
         options.put("buildName", "qa-diploma");
         options.put("sessionName", "Android smoke tests");
         return options;
+    }
+
+    private static String browserstackApp() {
+        return requiredBrowserStackValue("BROWSERSTACK_APP", CONFIG.browserstackApp());
+    }
+
+    private static String browserstackUser() {
+        return requiredBrowserStackValue("BROWSERSTACK_USER", CONFIG.userName());
+    }
+
+    private static String browserstackKey() {
+        return requiredBrowserStackValue("BROWSERSTACK_KEY", CONFIG.accessKey());
+    }
+
+    private static String requiredBrowserStackValue(String envName, String propertyValue) {
+        String value = firstNonBlank(System.getenv(envName), propertyValue);
+
+        if (value.isBlank()) {
+            throw new IllegalStateException(envName + " is required for BrowserStack mobile tests");
+        }
+
+        return value;
+    }
+
+    private static String firstNonBlank(String firstValue, String secondValue) {
+        if (firstValue != null && !firstValue.isBlank()) {
+            return firstValue.trim();
+        }
+
+        if (secondValue != null && !secondValue.isBlank()) {
+            return secondValue.trim();
+        }
+
+        return "";
     }
 
     private static AndroidDriver createAndroidDriver(String remoteUrl, DesiredCapabilities capabilities) {

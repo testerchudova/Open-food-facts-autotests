@@ -14,6 +14,7 @@ pipeline {
         string(name: 'DEVICE_NAME', defaultValue: 'Pixel_7', description: 'Android device name for mobile_test')
         string(name: 'PLATFORM_VERSION', defaultValue: '11', description: 'Android platform version for mobile_test')
         string(name: 'BROWSERSTACK_APP', defaultValue: '', description: 'BrowserStack uploaded app id for mobile_test, for example bs://...')
+        string(name: 'BROWSERSTACK_APP_URL', defaultValue: 'https://world.openfoodfacts.org/files/off.apk', description: 'Public APK URL to upload to BrowserStack when BROWSERSTACK_APP is empty')
     }
 
     environment {
@@ -34,14 +35,32 @@ pipeline {
             }
         }
 
+        stage('Upload Android app') {
+            when {
+                expression { browserStackMobileRun() && !params.BROWSERSTACK_APP?.trim() }
+            }
+            steps {
+                withCredentials([
+                        string(credentialsId: 'katy-browserstack-username', variable: 'BROWSERSTACK_USER'),
+                        string(credentialsId: 'katy-browserstack-access-key', variable: 'BROWSERSTACK_KEY')
+                ]) {
+                    script {
+                        env.BROWSERSTACK_APP = uploadBrowserStackApp()
+                        echo 'Android app was uploaded to BrowserStack.'
+                    }
+                }
+            }
+        }
+
         stage('Run tests') {
             steps {
                 script {
-                    if (params.TEST_SUITE == 'mobile_test' && params.DEVICE_HOST == 'browserstack') {
+                    if (browserStackMobileRun()) {
                         withCredentials([
                                 string(credentialsId: 'katy-browserstack-username', variable: 'BROWSERSTACK_USER'),
                                 string(credentialsId: 'katy-browserstack-access-key', variable: 'BROWSERSTACK_KEY')
                         ]) {
+                            env.BROWSERSTACK_APP = resolveBrowserStackApp()
                             runGradleTests(browserStackArgs())
                         }
                     } else {
@@ -95,16 +114,16 @@ def cleanReportArtifacts() {
 
 def commonArgs(String remoteUrl) {
     List args = [
-            "-Dbrowser=${params.WEB_BROWSER}",
-            "-Dheadless=${params.HEADLESS}",
-            "-DbrowserSize=${params.BROWSER_SIZE}",
-            "-DbrowserVersion=${params.BROWSER_VERSION}",
-            "-DremoteUrl=${remoteUrl}",
-            "-DenableVideo=${params.ENABLE_VIDEO}",
-            "-DvideoStorageUrl=${params.VIDEO_STORAGE_URL}",
-            "-DdeviceHost=${params.DEVICE_HOST}",
-            "-DdeviceName=${params.DEVICE_NAME}",
-            "-DplatformVersion=${params.PLATFORM_VERSION}"
+            systemPropertyArg('browser', params.WEB_BROWSER),
+            systemPropertyArg('headless', params.HEADLESS),
+            systemPropertyArg('browserSize', params.BROWSER_SIZE),
+            systemPropertyArg('browserVersion', params.BROWSER_VERSION),
+            systemPropertyArg('remoteUrl', remoteUrl),
+            systemPropertyArg('enableVideo', params.ENABLE_VIDEO),
+            systemPropertyArg('videoStorageUrl', params.VIDEO_STORAGE_URL),
+            systemPropertyArg('deviceHost', params.DEVICE_HOST),
+            systemPropertyArg('deviceName', params.DEVICE_NAME),
+            systemPropertyArg('platformVersion', params.PLATFORM_VERSION)
     ]
 
     return args.join(' ')
@@ -112,13 +131,114 @@ def commonArgs(String remoteUrl) {
 
 def browserStackArgs() {
     List args = [
-            commonArgs(params.REMOTE_URL),
-            "-DuserName=${env.BROWSERSTACK_USER}",
-            "-DaccessKey=${env.BROWSERSTACK_KEY}",
-            "-DbrowserstackApp=${params.BROWSERSTACK_APP}"
+            commonArgs(params.REMOTE_URL)
     ]
 
     return args.join(' ')
+}
+
+def systemPropertyArg(String name, Object value) {
+    return commandArg("-D${name}=${value == null ? '' : value.toString()}")
+}
+
+def commandArg(String value) {
+    if (isUnix()) {
+        return "'${value.replace("'", "'\"'\"'")}'"
+    }
+
+    String escapedValue = value.replace('"', '\\"')
+    return "\"${escapedValue}\""
+}
+
+def browserStackMobileRun() {
+    return params.TEST_SUITE == 'mobile_test' && params.DEVICE_HOST == 'browserstack'
+}
+
+def resolveBrowserStackApp() {
+    String app = firstNonBlank(params.BROWSERSTACK_APP, env.BROWSERSTACK_APP)
+
+    if (!app) {
+        error 'BrowserStack app id is empty. Set BROWSERSTACK_APP or provide BROWSERSTACK_APP_URL for automatic upload.'
+    }
+
+    return app
+}
+
+def uploadBrowserStackApp() {
+    String localApp = 'src/test/resources/apps/openfoodfacts.apk'
+    String uploadResponse
+
+    if (fileExists(localApp)) {
+        uploadResponse = uploadBrowserStackAppFile(localApp)
+    } else {
+        String appUrl = params.BROWSERSTACK_APP_URL?.trim()
+
+        if (!appUrl) {
+            error "BrowserStack app was not prepared. Add ${localApp} to the Jenkins workspace, set BROWSERSTACK_APP, or set BROWSERSTACK_APP_URL."
+        }
+
+        uploadResponse = uploadBrowserStackAppUrl(appUrl)
+    }
+
+    def uploadResult = new groovy.json.JsonSlurperClassic().parseText(uploadResponse)
+    String app = uploadResult.app_url ?: ''
+
+    if (!app) {
+        echo "BrowserStack upload response: ${uploadResponse}"
+        error 'BrowserStack upload did not return app_url.'
+    }
+
+    return app
+}
+
+def uploadBrowserStackAppFile(String localApp) {
+    withEnv(["BROWSERSTACK_APP_FILE=${localApp}"]) {
+        if (isUnix()) {
+            return sh(script: '''
+                set +x
+                curl -sS -u "$BROWSERSTACK_USER:$BROWSERSTACK_KEY" \
+                    -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+                    -F "file=@$BROWSERSTACK_APP_FILE"
+            ''', returnStdout: true).trim()
+        }
+
+        return powershell(script: '''
+            $ErrorActionPreference = "Stop"
+            curl.exe -sS -u "${env:BROWSERSTACK_USER}:${env:BROWSERSTACK_KEY}" `
+                -X POST "https://api-cloud.browserstack.com/app-automate/upload" `
+                -F "file=@$env:BROWSERSTACK_APP_FILE"
+        ''', returnStdout: true).trim()
+    }
+}
+
+def uploadBrowserStackAppUrl(String appUrl) {
+    withEnv(["BROWSERSTACK_UPLOAD_URL=${appUrl}"]) {
+        if (isUnix()) {
+            return sh(script: '''
+                set +x
+                curl -sS -u "$BROWSERSTACK_USER:$BROWSERSTACK_KEY" \
+                    -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+                    -F "url=$BROWSERSTACK_UPLOAD_URL"
+            ''', returnStdout: true).trim()
+        }
+
+        return powershell(script: '''
+            $ErrorActionPreference = "Stop"
+            curl.exe -sS -u "${env:BROWSERSTACK_USER}:${env:BROWSERSTACK_KEY}" `
+                -X POST "https://api-cloud.browserstack.com/app-automate/upload" `
+                -F "url=$env:BROWSERSTACK_UPLOAD_URL"
+        ''', returnStdout: true).trim()
+    }
+}
+
+def firstNonBlank(Object... values) {
+    for (Object value : values) {
+        if (value != null && value.toString().trim()) {
+            return value.toString().trim()
+        }
+    }
+
+    return ''
 }
 
 def publishReports() {

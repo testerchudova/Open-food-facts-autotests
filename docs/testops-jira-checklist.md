@@ -20,6 +20,7 @@ Use this checklist when configuring infrastructure manually.
    - `DEVICE_NAME`
    - `PLATFORM_VERSION`
    - `BROWSERSTACK_APP`
+   - `BROWSERSTACK_APP_URL`
 5. Add Jenkins credentials:
    - `katy-telegram-bot-token`
    - `katy-telegram-chat-id`
@@ -27,6 +28,7 @@ Use this checklist when configuring infrastructure manually.
    - `katy-browserstack-access-key`
 6. Install and configure Allure Jenkins Plugin.
 7. Run `api_test`, `ui_test` and `mobile_test` as separate builds.
+8. For BrowserStack mobile runs, either pass an existing `bs://...` value in `BROWSERSTACK_APP` or keep `BROWSERSTACK_APP` empty and set `BROWSERSTACK_APP_URL` so Jenkins uploads the APK automatically.
 
 ## UI video
 
@@ -61,9 +63,8 @@ For mobile tests use either:
 BrowserStack run requires:
 
 - `deviceHost=browserstack`
-- `userName`
-- `accessKey`
-- `browserstackApp`
+- Jenkins credentials `katy-browserstack-username` and `katy-browserstack-access-key`
+- `BROWSERSTACK_APP` or `BROWSERSTACK_APP_URL`
 
 Allure attachments include mobile screenshot, page source and BrowserStack video.
 

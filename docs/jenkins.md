@@ -38,7 +38,8 @@ Selenoid access is passed through the `REMOTE_URL` Jenkins parameter, for exampl
 | `DEVICE_HOST` | `emulator`, `browserstack` | Mobile execution host, used for `mobile_test` |
 | `DEVICE_NAME` | `Pixel_7` | Android device name for `mobile_test` |
 | `PLATFORM_VERSION` | `11` | Android version for `mobile_test` |
-| `BROWSERSTACK_APP` | `bs://...` | Uploaded BrowserStack app id for `mobile_test` |
+| `BROWSERSTACK_APP` | `bs://...` | Optional already uploaded BrowserStack app id for `mobile_test` with `DEVICE_HOST=browserstack` |
+| `BROWSERSTACK_APP_URL` | `https://world.openfoodfacts.org/files/off.apk` | Public APK URL used for automatic BrowserStack upload when `BROWSERSTACK_APP` is empty |
 
 ## Reports
 
@@ -87,6 +88,17 @@ For local emulator runs, prepare the Open Food Facts app once before the Jenkins
 demo run: install the APK, complete onboarding, then run with `-DnoReset=true`.
 This keeps product smoke tests focused on the main screen and search flow rather
 than the onboarding tutorial.
+
+For BrowserStack runs, the pipeline works like the previous mobile homework
+project: it prepares the app before tests and passes the resulting `bs://...`
+value through Jenkins environment variables. You can either:
+
+- set `BROWSERSTACK_APP` to an already uploaded `bs://...` app id;
+- leave `BROWSERSTACK_APP` empty and keep `BROWSERSTACK_APP_URL` filled so Jenkins uploads the APK automatically.
+
+BrowserStack username, access key and app id are not passed as plain Gradle
+arguments. Tests read them from `BROWSERSTACK_USER`, `BROWSERSTACK_KEY` and
+`BROWSERSTACK_APP` environment variables provided by Jenkins.
 
 ## Telegram
 

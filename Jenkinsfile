@@ -3,11 +3,17 @@ pipeline {
 
     parameters {
         choice(name: 'TEST_SUITE', choices: ['api_test', 'ui_test', 'mobile_test', 'test'], description: 'Gradle test task to run')
-        choice(name: 'DEVICE_HOST', choices: ['emulator', 'browserstack'], description: 'Mobile execution host')
-        string(name: 'DEVICE_NAME', defaultValue: 'Pixel_7', description: 'Android device name')
-        string(name: 'PLATFORM_VERSION', defaultValue: '11', description: 'Android platform version')
-        string(name: 'BROWSERSTACK_APP', defaultValue: '', description: 'BrowserStack uploaded app id, for example bs://...')
+        choice(name: 'WEB_BROWSER', choices: ['chrome', 'firefox'], description: 'Web browser for UI tests')
         booleanParam(name: 'HEADLESS', defaultValue: true, description: 'Run web UI tests in headless browser')
+        string(name: 'BROWSER_SIZE', defaultValue: '1920x1080', description: 'Browser window size for UI tests')
+        string(name: 'BROWSER_VERSION', defaultValue: '', description: 'Browser version for remote UI runs; leave empty for default')
+        string(name: 'REMOTE_URL', defaultValue: '', description: 'Remote WebDriver URL for Selenoid; leave empty for local browser')
+        booleanParam(name: 'ENABLE_VIDEO', defaultValue: true, description: 'Enable UI video when REMOTE_URL is configured')
+        string(name: 'VIDEO_STORAGE_URL', defaultValue: 'https://selenoid.autotests.cloud/video/', description: 'Selenoid video storage URL')
+        choice(name: 'DEVICE_HOST', choices: ['emulator', 'browserstack'], description: 'Mobile execution host for mobile_test only')
+        string(name: 'DEVICE_NAME', defaultValue: 'Pixel_7', description: 'Android device name for mobile_test')
+        string(name: 'PLATFORM_VERSION', defaultValue: '11', description: 'Android platform version for mobile_test')
+        string(name: 'BROWSERSTACK_APP', defaultValue: '', description: 'BrowserStack uploaded app id for mobile_test, for example bs://...')
     }
 
     environment {
@@ -70,7 +76,13 @@ def gradleExecutable() {
 
 def commonArgs() {
     List args = [
+            "-Dbrowser=${params.WEB_BROWSER}",
             "-Dheadless=${params.HEADLESS}",
+            "-DbrowserSize=${params.BROWSER_SIZE}",
+            "-DbrowserVersion=${params.BROWSER_VERSION}",
+            "-DremoteUrl=${params.REMOTE_URL}",
+            "-DenableVideo=${params.ENABLE_VIDEO}",
+            "-DvideoStorageUrl=${params.VIDEO_STORAGE_URL}",
             "-DdeviceHost=${params.DEVICE_HOST}",
             "-DdeviceName=${params.DEVICE_NAME}",
             "-DplatformVersion=${params.PLATFORM_VERSION}"
@@ -115,6 +127,8 @@ def notifyTelegram(String status) {
 Build: #${env.BUILD_NUMBER}
 Status: ${status}
 Suite: ${params.TEST_SUITE}
+Browser: ${params.WEB_BROWSER}
+Device host: ${params.DEVICE_HOST}
 Report: ${env.BUILD_URL}allure
 Job: ${env.BUILD_URL}"""
 

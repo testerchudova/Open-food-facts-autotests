@@ -27,11 +27,17 @@ BrowserStack credentials are needed only for `mobile_test` with `DEVICE_HOST=bro
 | Parameter | Example | Description |
 | --- | --- | --- |
 | `TEST_SUITE` | `api_test`, `ui_test`, `mobile_test`, `test` | Gradle task to run |
-| `DEVICE_HOST` | `emulator`, `browserstack` | Mobile execution host |
-| `DEVICE_NAME` | `Pixel_7` | Android device name |
-| `PLATFORM_VERSION` | `11` | Android version |
-| `BROWSERSTACK_APP` | `bs://...` | Uploaded BrowserStack app id |
+| `WEB_BROWSER` | `chrome`, `firefox` | Browser for web UI tests |
 | `HEADLESS` | `true` | Headless mode for web UI tests |
+| `BROWSER_SIZE` | `1920x1080` | Browser window size for web UI tests |
+| `BROWSER_VERSION` | `100.0` | Browser version for remote UI runs; can be empty |
+| `REMOTE_URL` | `https://selenoid.autotests.cloud/wd/hub` | Remote WebDriver URL for Selenoid; empty means local browser |
+| `ENABLE_VIDEO` | `true` | Enables UI video attachment when `REMOTE_URL` is set |
+| `VIDEO_STORAGE_URL` | `https://selenoid.autotests.cloud/video/` | Selenoid video storage URL |
+| `DEVICE_HOST` | `emulator`, `browserstack` | Mobile execution host, used for `mobile_test` |
+| `DEVICE_NAME` | `Pixel_7` | Android device name for `mobile_test` |
+| `PLATFORM_VERSION` | `11` | Android version for `mobile_test` |
+| `BROWSERSTACK_APP` | `bs://...` | Uploaded BrowserStack app id for `mobile_test` |
 
 ## Reports
 
@@ -46,15 +52,20 @@ The pipeline publishes:
 
 UI tests can attach video to Allure when they run in Selenoid or another remote browser grid with video recording.
 
-Required parameters:
+Required Jenkins parameters:
 
-```bash
--DremoteUrl=https://selenoid.autotests.cloud/wd/hub
--DenableVideo=true
--DvideoStorageUrl=https://selenoid.autotests.cloud/video/
-```
+- `TEST_SUITE=ui_test`
+- `REMOTE_URL=https://selenoid.autotests.cloud/wd/hub`
+- `ENABLE_VIDEO=true`
+- `VIDEO_STORAGE_URL=https://selenoid.autotests.cloud/video/`
 
 The test base enables Selenoid capabilities `enableVNC` and `enableVideo`, then attaches an HTML video player to the Allure test result.
+
+For a regular local web UI run, leave `REMOTE_URL` empty and use:
+
+- `TEST_SUITE=ui_test`
+- `WEB_BROWSER=chrome`
+- `HEADLESS=true`
 
 ## Mobile evidence
 

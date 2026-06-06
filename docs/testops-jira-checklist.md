@@ -9,11 +9,17 @@ Use this checklist when configuring infrastructure manually.
 3. Use `Jenkinsfile` from the repository root.
 4. Add parameters:
    - `TEST_SUITE`
+   - `WEB_BROWSER`
+   - `HEADLESS`
+   - `BROWSER_SIZE`
+   - `BROWSER_VERSION`
+   - `REMOTE_URL`
+   - `ENABLE_VIDEO`
+   - `VIDEO_STORAGE_URL`
    - `DEVICE_HOST`
    - `DEVICE_NAME`
    - `PLATFORM_VERSION`
    - `BROWSERSTACK_APP`
-   - `HEADLESS`
 5. Add Jenkins credentials:
    - `katy-telegram-bot-token`
    - `katy-telegram-chat-id`
@@ -28,9 +34,9 @@ For UI test video use Selenoid or another remote browser grid with video recordi
 
 Required Jenkins parameters:
 
-- `remoteUrl`: Selenoid WebDriver URL.
-- `enableVideo`: `true`.
-- `videoStorageUrl`: public URL where Selenoid stores mp4 files.
+- `REMOTE_URL`: Selenoid WebDriver URL.
+- `ENABLE_VIDEO`: `true`.
+- `VIDEO_STORAGE_URL`: public URL where Selenoid stores mp4 files.
 
 Example:
 

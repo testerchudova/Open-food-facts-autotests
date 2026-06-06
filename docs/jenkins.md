@@ -17,8 +17,7 @@ Create these credentials in Jenkins before running the job.
 | --- | --- | --- |
 | `katy-telegram-bot-token` | Secret text | Telegram bot token |
 | `katy-telegram-chat-id` | Secret text | Telegram chat id |
-| `katy-browserstack-username` | Secret text | BrowserStack username |
-| `katy-browserstack-access-key` | Secret text | BrowserStack access key |
+| `browserstack-credentials` | Username with password | BrowserStack username and access key |
 
 BrowserStack credentials are needed only for `mobile_test` with `DEVICE_HOST=browserstack`.
 Selenoid access is passed through the `REMOTE_URL` Jenkins parameter, for example `https://<login>:<password>@selenoid.autotests.cloud/wd/hub`.
@@ -29,7 +28,7 @@ Selenoid access is passed through the `REMOTE_URL` Jenkins parameter, for exampl
 | --- | --- | --- |
 | `TEST_SUITE` | `api_test`, `ui_test`, `mobile_test`, `test` | Gradle task to run |
 | `WEB_BROWSER` | `chrome`, `firefox` | Browser for web UI tests |
-| `HEADLESS` | `true` | Headless mode for web UI tests |
+| `HEADLESS` | `false` | Headless mode for web UI tests; keep `false` for Selenoid video |
 | `BROWSER_SIZE` | `1920x1080` | Browser window size for web UI tests |
 | `BROWSER_VERSION` | `100.0` | Browser version for remote UI runs; can be empty |
 | `REMOTE_URL` | `https://<login>:<password>@selenoid.autotests.cloud/wd/hub` | Remote WebDriver URL for Selenoid; empty means local browser |
@@ -60,6 +59,7 @@ Required Jenkins parameters:
 
 - `TEST_SUITE=ui_test`
 - `REMOTE_URL=https://<login>:<password>@selenoid.autotests.cloud/wd/hub`
+- `HEADLESS=false`
 - `ENABLE_VIDEO=true`
 - `VIDEO_STORAGE_URL=https://selenoid.autotests.cloud/video/`
 
@@ -69,8 +69,11 @@ For Jenkins web UI runs, keep the default Selenoid value:
 
 - `TEST_SUITE=ui_test`
 - `WEB_BROWSER=chrome`
-- `HEADLESS=true`
+- `HEADLESS=false`
 - `REMOTE_URL=https://<login>:<password>@selenoid.autotests.cloud/wd/hub`
+
+If `HEADLESS=true`, the test can pass, but the Selenoid video may contain only
+the Selenoid start screen instead of the browser actions.
 
 Without Selenoid login and password in `REMOTE_URL`, Selenoid responds with `401 Authorization Required`.
 

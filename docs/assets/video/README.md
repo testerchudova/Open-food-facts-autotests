@@ -11,7 +11,7 @@ Recommended files:
 UI video is attached to Allure automatically when tests are executed with remote Selenoid settings:
 
 ```bash
-gradle clean ui_test -DremoteUrl=https://selenoid.example.com/wd/hub -DenableVideo=true
+gradle clean ui_test -DremoteUrl=https://selenoid.example.com/wd/hub -Dheadless=false -DenableVideo=true
 ```
 
 Mobile video is attached to Allure automatically when tests are executed in BrowserStack:

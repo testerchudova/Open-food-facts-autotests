@@ -4,7 +4,7 @@ pipeline {
     parameters {
         choice(name: 'TEST_SUITE', choices: ['api_test', 'ui_test', 'mobile_test', 'test'], description: 'Gradle test task to run')
         choice(name: 'WEB_BROWSER', choices: ['chrome', 'firefox'], description: 'Web browser for UI tests')
-        booleanParam(name: 'HEADLESS', defaultValue: true, description: 'Run web UI tests in headless browser')
+        booleanParam(name: 'HEADLESS', defaultValue: false, description: 'Run web UI tests in headless browser; keep false for Selenoid video')
         string(name: 'BROWSER_SIZE', defaultValue: '1920x1080', description: 'Browser window size for UI tests')
         string(name: 'BROWSER_VERSION', defaultValue: '', description: 'Browser version for remote UI runs; leave empty for default')
         string(name: 'REMOTE_URL', defaultValue: 'https://selenoid.autotests.cloud/wd/hub', description: 'Remote WebDriver URL for Selenoid; clear it only for local browser')
@@ -41,8 +41,11 @@ pipeline {
             }
             steps {
                 withCredentials([
-                        string(credentialsId: 'katy-browserstack-username', variable: 'BROWSERSTACK_USER'),
-                        string(credentialsId: 'katy-browserstack-access-key', variable: 'BROWSERSTACK_KEY')
+                        usernamePassword(
+                                credentialsId: 'browserstack-credentials',
+                                usernameVariable: 'BROWSERSTACK_USER',
+                                passwordVariable: 'BROWSERSTACK_KEY'
+                        )
                 ]) {
                     script {
                         env.BROWSERSTACK_APP = uploadBrowserStackApp()
@@ -57,8 +60,11 @@ pipeline {
                 script {
                     if (browserStackMobileRun()) {
                         withCredentials([
-                                string(credentialsId: 'katy-browserstack-username', variable: 'BROWSERSTACK_USER'),
-                                string(credentialsId: 'katy-browserstack-access-key', variable: 'BROWSERSTACK_KEY')
+                                usernamePassword(
+                                        credentialsId: 'browserstack-credentials',
+                                        usernameVariable: 'BROWSERSTACK_USER',
+                                        passwordVariable: 'BROWSERSTACK_KEY'
+                                )
                         ]) {
                             env.BROWSERSTACK_APP = resolveBrowserStackApp()
                             runGradleTests(browserStackArgs())

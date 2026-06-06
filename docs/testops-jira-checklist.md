@@ -24,8 +24,7 @@ Use this checklist when configuring infrastructure manually.
 5. Add Jenkins credentials:
    - `katy-telegram-bot-token`
    - `katy-telegram-chat-id`
-   - `katy-browserstack-username`
-   - `katy-browserstack-access-key`
+   - `browserstack-credentials`
 6. Install and configure Allure Jenkins Plugin.
 7. Run `api_test`, `ui_test` and `mobile_test` as separate builds.
 8. For BrowserStack mobile runs, either pass an existing `bs://...` value in `BROWSERSTACK_APP` or keep `BROWSERSTACK_APP` empty and set `BROWSERSTACK_APP_URL` so Jenkins uploads the APK automatically.
@@ -37,6 +36,7 @@ For UI test video use Selenoid or another remote browser grid with video recordi
 Required Jenkins parameters:
 
 - `REMOTE_URL`: Selenoid WebDriver URL.
+- `HEADLESS`: `false`.
 - `ENABLE_VIDEO`: `true`.
 - `VIDEO_STORAGE_URL`: public URL where Selenoid stores mp4 files.
 
@@ -49,6 +49,7 @@ Example:
 ```bash
 gradle clean ui_test \
   -DremoteUrl=https://<login>:<password>@selenoid.autotests.cloud/wd/hub \
+  -Dheadless=false \
   -DenableVideo=true \
   -DvideoStorageUrl=https://selenoid.autotests.cloud/video/
 ```
@@ -63,7 +64,7 @@ For mobile tests use either:
 BrowserStack run requires:
 
 - `deviceHost=browserstack`
-- Jenkins credentials `katy-browserstack-username` and `katy-browserstack-access-key`
+- Jenkins credential `browserstack-credentials`
 - `BROWSERSTACK_APP` or `BROWSERSTACK_APP_URL`
 
 Allure attachments include mobile screenshot, page source and BrowserStack video.

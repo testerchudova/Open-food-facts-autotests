@@ -15,12 +15,42 @@ public class BrowserStackHelper {
 
     public static String videoUrl(String sessionId) {
         return given()
-                .auth().preemptive().basic(CONFIG.userName(), CONFIG.accessKey())
+                .auth().preemptive().basic(browserstackUser(), browserstackKey())
                 .when()
                 .get(SESSION_URL, sessionId)
                 .then()
                 .statusCode(200)
                 .extract()
                 .path("automation_session.video_url");
+    }
+
+    private static String browserstackUser() {
+        return requiredBrowserStackValue("BROWSERSTACK_USER", CONFIG.userName());
+    }
+
+    private static String browserstackKey() {
+        return requiredBrowserStackValue("BROWSERSTACK_KEY", CONFIG.accessKey());
+    }
+
+    private static String requiredBrowserStackValue(String envName, String propertyValue) {
+        String value = firstNonBlank(System.getenv(envName), propertyValue);
+
+        if (value.isBlank()) {
+            throw new IllegalStateException(envName + " is required for BrowserStack mobile tests");
+        }
+
+        return value;
+    }
+
+    private static String firstNonBlank(String firstValue, String secondValue) {
+        if (firstValue != null && !firstValue.isBlank()) {
+            return firstValue.trim();
+        }
+
+        if (secondValue != null && !secondValue.isBlank()) {
+            return secondValue.trim();
+        }
+
+        return "";
     }
 }

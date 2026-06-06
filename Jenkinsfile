@@ -31,8 +31,8 @@ pipeline {
                 script {
                     if (params.TEST_SUITE == 'mobile_test' && params.DEVICE_HOST == 'browserstack') {
                         withCredentials([
-                                string(credentialsId: 'browserstack-username', variable: 'BROWSERSTACK_USER'),
-                                string(credentialsId: 'browserstack-access-key', variable: 'BROWSERSTACK_KEY')
+                                string(credentialsId: 'katy-browserstack-username', variable: 'BROWSERSTACK_USER'),
+                                string(credentialsId: 'katy-browserstack-access-key', variable: 'BROWSERSTACK_KEY')
                         ]) {
                             runGradleTests(browserStackArgs())
                         }
@@ -108,8 +108,8 @@ def publishReports() {
 def notifyTelegram(String status) {
     try {
         withCredentials([
-                string(credentialsId: 'telegram-bot-token', variable: 'TELEGRAM_BOT_TOKEN'),
-                string(credentialsId: 'telegram-chat-id', variable: 'TELEGRAM_CHAT_ID')
+                string(credentialsId: 'katy-telegram-bot-token', variable: 'TELEGRAM_BOT_TOKEN'),
+                string(credentialsId: 'katy-telegram-chat-id', variable: 'TELEGRAM_CHAT_ID')
         ]) {
             String message = """${env.PROJECT_NAME}
 Build: #${env.BUILD_NUMBER}

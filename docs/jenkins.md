@@ -15,10 +15,10 @@ Create these credentials in Jenkins before running the job.
 
 | Credentials ID | Type | Used for |
 | --- | --- | --- |
-| `telegram-bot-token` | Secret text | Telegram bot token |
-| `telegram-chat-id` | Secret text | Telegram chat id |
-| `browserstack-username` | Secret text | BrowserStack username |
-| `browserstack-access-key` | Secret text | BrowserStack access key |
+| `katy-telegram-bot-token` | Secret text | Telegram bot token |
+| `katy-telegram-chat-id` | Secret text | Telegram chat id |
+| `katy-browserstack-username` | Secret text | BrowserStack username |
+| `katy-browserstack-access-key` | Secret text | BrowserStack access key |
 
 BrowserStack credentials are needed only for `mobile_test` with `DEVICE_HOST=browserstack`.
 
@@ -73,7 +73,7 @@ than the onboarding tutorial.
 
 Telegram can be configured in two ways:
 
-- Jenkins credentials used by `Jenkinsfile`: `telegram-bot-token` and `telegram-chat-id`.
+- Jenkins credentials used by `Jenkinsfile`: `katy-telegram-bot-token` and `katy-telegram-chat-id`.
 - Allure Notifications template: `notifications.json`.
 
 Keep real Telegram tokens outside Git. If a token was committed to a public repository before, revoke it in BotFather and create a new one.

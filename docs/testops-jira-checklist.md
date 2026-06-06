@@ -15,10 +15,10 @@ Use this checklist when configuring infrastructure manually.
    - `BROWSERSTACK_APP`
    - `HEADLESS`
 5. Add Jenkins credentials:
-   - `telegram-bot-token`
-   - `telegram-chat-id`
-   - `browserstack-username`
-   - `browserstack-access-key`
+   - `katy-telegram-bot-token`
+   - `katy-telegram-chat-id`
+   - `katy-browserstack-username`
+   - `katy-browserstack-access-key`
 6. Install and configure Allure Jenkins Plugin.
 7. Run `api_test`, `ui_test` and `mobile_test` as separate builds.
 
@@ -61,7 +61,7 @@ Allure attachments include mobile screenshot, page source and BrowserStack video
 
 This project has two possible Telegram approaches:
 
-- Jenkins pipeline notification through credentials `telegram-bot-token` and `telegram-chat-id`.
+- Jenkins pipeline notification through credentials `katy-telegram-bot-token` and `katy-telegram-chat-id`.
 - Allure Notifications configuration through `notifications.json`.
 
 Do not commit real Telegram tokens. Use Jenkins credentials or create a local non-committed copy.

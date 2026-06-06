@@ -10,6 +10,11 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 def allureVersion = '2.21.0',
     appiumJavaClientVersion = '8.3.0',
     assertJVersion = '3.24.2',
@@ -58,6 +63,7 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.release.set(17)
 }
 
 tasks.withType(Test).configureEach {

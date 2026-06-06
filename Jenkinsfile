@@ -180,8 +180,7 @@ def uploadBrowserStackApp() {
         uploadResponse = uploadBrowserStackAppUrl(appUrl)
     }
 
-    def uploadResult = new groovy.json.JsonSlurperClassic().parseText(uploadResponse)
-    String app = uploadResult.app_url ?: ''
+    String app = extractBrowserStackAppUrl(uploadResponse)
 
     if (!app) {
         echo "BrowserStack upload response: ${uploadResponse}"
@@ -189,6 +188,35 @@ def uploadBrowserStackApp() {
     }
 
     return app
+}
+
+def extractBrowserStackAppUrl(String uploadResponse) {
+    String marker = '"app_url"'
+    int keyIndex = uploadResponse.indexOf(marker)
+
+    if (keyIndex < 0) {
+        return ''
+    }
+
+    int colonIndex = uploadResponse.indexOf(':', keyIndex + marker.length())
+
+    if (colonIndex < 0) {
+        return ''
+    }
+
+    int valueStart = uploadResponse.indexOf('"', colonIndex + 1)
+
+    if (valueStart < 0) {
+        return ''
+    }
+
+    int valueEnd = uploadResponse.indexOf('"', valueStart + 1)
+
+    if (valueEnd < 0) {
+        return ''
+    }
+
+    return uploadResponse.substring(valueStart + 1, valueEnd)
 }
 
 def uploadBrowserStackAppFile(String localApp) {

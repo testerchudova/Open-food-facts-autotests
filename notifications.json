@@ -1,0 +1,19 @@
+{
+  "base": {
+    "project": "Open Food Facts Autotests",
+    "environment": "Jenkins / BrowserStack / Android Emulator",
+    "allureFolder": "allure-report",
+    "logo": "https://allurereports.com/images/allure-logo.png",
+    "reportLink": "https://jenkins.example.com/job/open-food-facts-autotests/allure/",
+    "language": "ru",
+    "enableChart": true,
+    "comment": "Запуск автотестов Open Food Facts в Jenkins завершен",
+    "durationFormat": "HH:mm:ss.SSS",
+    "enableSuitesPublishing": false
+  },
+  "telegram": {
+    "token": "${TELEGRAM_BOT_TOKEN}",
+    "chat": "${TELEGRAM_CHAT_ID}",
+    "replyTo": ""
+  }
+}

@@ -1,0 +1,14 @@
+.gradle/
+build/
+out/
+.idea/
+*.iml
+allure-results/
+allure-report/
+src/test/resources/apps/*.apk
+src/test/resources/apps/*.xapk
+src/test/resources/apps/*.zip
+src/test/resources/apps/openfoodfacts-xapk/
+src/test/resources/config/credentials.properties
+notifications.local.json
+*.log

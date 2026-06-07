@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.sleep;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
@@ -148,8 +149,9 @@ public class MainScreen {
     private boolean clickFirstVisible(List<By> locators) {
         for (By locator : locators) {
             try {
-                if ($(locator).exists() && $(locator).isDisplayed()) {
-                    $(locator).click();
+                SelenideElement element = $(locator);
+                if (element.is(visible)) {
+                    element.click();
                     return true;
                 }
             } catch (WebDriverException ignored) {
@@ -164,8 +166,9 @@ public class MainScreen {
         for (int attempt = 0; attempt < 30; attempt++) {
             for (By locator : locators) {
                 try {
-                    if ($(locator).exists() && $(locator).isDisplayed()) {
-                        return $(locator);
+                    SelenideElement element = $(locator);
+                    if (element.is(visible)) {
+                        return element;
                     }
                 } catch (WebDriverException ignored) {
                     continue;

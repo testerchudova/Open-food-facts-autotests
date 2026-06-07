@@ -5,6 +5,7 @@ Real screenshots after running tests in Jenkins and on a local Android emulator.
 Current files:
 
 - `Отчет Allure.png`
+- `openfoodfacts-site.png`
 - `ТГ отчет.png`
 - `ТГ отчет-2.png`
 - `mobile-emulator-main-screen.png`

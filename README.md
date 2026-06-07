@@ -1,6 +1,8 @@
 # Open Food Facts Autotests
 
-<h3 align="center">Дипломный проект по автоматизации тестирования <a href="https://world.openfoodfacts.org">world.openfoodfacts.org</a></h3>
+<p align="center">
+  <a href="https://world.openfoodfacts.org">world.openfoodfacts.org</a>
+</p>
 
 <p align="center">
   <a href="https://www.java.com/"><img alt="Java" src="https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white"></a>
@@ -12,118 +14,44 @@
   <a href="https://allurereport.org/"><img alt="Allure" src="https://img.shields.io/badge/Allure-Report-FF6A00"></a>
 </p>
 
-## Содержание
-
-- [О проекте](#о-проекте)
-- [Что покрыто тестами](#что-покрыто-тестами)
-- [Технологии](#технологии)
-- [Структура проекта](#структура-проекта)
-- [Запуск тестов](#запуск-тестов)
-- [Отчеты и артефакты](#отчеты-и-артефакты)
-- [Jenkins, Telegram и инфраструктура](#jenkins-telegram-и-инфраструктура)
-- [Ручные тесты](#ручные-тесты)
-- [Полезные ссылки](#полезные-ссылки)
+<p align="center">
+  <img src="docs/assets/screenshots/openfoodfacts-site.png" alt="Open Food Facts site" width="850">
+</p>
 
 ## О проекте
 
-Проект объединяет основные блоки дипломной работы вокруг одного продукта - Open Food Facts:
+Дипломный проект объединяет UI, API, Mobile и ручное тестирование одного продукта - Open Food Facts.
 
-- UI автотесты для сайта с использованием Page Objects.
-- API автотесты с клиентами, моделями на Lombok, спецификациями и кастомными шаблонами Allure REST Assured.
-- Подготовка тестовых данных через API для UI сценариев.
-- Mobile автотесты для Android приложения с использованием Screen Objects.
-- Ручные тесты и чеклисты в документации проекта.
-- Запуск в Jenkins с Allure отчетом и уведомлением в Telegram.
+- UI автотесты покрывают главную страницу, поиск и карточку продукта.
+- API автотесты проверяют получение продукта, поиск и подготовку данных для UI.
+- Mobile автотесты проверяют основные сценарии Android приложения через Screen Objects.
+- Jenkins запускает выбранный набор тестов, публикует Allure отчет, отправляет Telegram уведомление и загружает результаты в Allure TestOps.
+- Jira задача диплома связана с автотестами через `@Issue("HOMEWORK-1611")`.
 
-## Что покрыто тестами
+## Покрытие
 
-### UI
-
-- Проверка главной страницы и поиска.
-- Проверка карточки продукта: штрихкод, бренд, данные о питательной ценности.
-- Проверка отображения подготовленного через API продукта в UI.
-- При запуске через Selenoid в Allure прикладываются скриншот, исходный код страницы, логи консоли браузера и видео.
-
-### API
-
-- Получение продукта по штрихкоду.
-- Проверка данных продукта: бренд и nutriments.
-- Проверка поиска через Open Food Facts API.
-- Подготовка данных для UI тестов.
-- Заготовка теста создания продукта на тестовом стенде с авторизацией.
-
-### Mobile
-
-- Проверка главного экрана Android приложения.
-- Проверка доступности действия сканирования.
-- Проверка поиска продукта в приложении.
-- При запуске в BrowserStack в Allure прикладываются скриншот, исходный код страницы и видео.
-
-### Manual
-
-Ручные тесты вынесены в отдельный документ: [docs/manual-tests.md](docs/manual-tests.md).
+| Блок | Реализовано |
+| --- | --- |
+| UI | Page Objects, Selenide, Selenoid video, скриншоты, page source, browser logs |
+| API | REST Assured clients, Specs, Lombok models, custom Allure templates |
+| Mobile | Appium, Screen Objects, локальный Android emulator, BrowserStack configuration |
+| Manual | Ручные сценарии в [docs/manual-tests.md](docs/manual-tests.md) |
+| CI/CD | Jenkins Pipeline, Allure Report, Allure TestOps, Telegram, Jira |
 
 ## Технологии
 
-| Зона | Используется |
-| --- | --- |
-| Язык и сборка | Java 17, Gradle |
-| Тестовый фреймворк | JUnit 5 |
-| UI | Selenide |
-| API | REST Assured, Jackson, Lombok |
-| Mobile | Appium Java Client, Selenide |
-| Конфигурация | Owner |
-| Проверки | AssertJ |
-| Отчеты | Allure Report, Allure Selenide, Allure REST Assured |
-| CI и инфраструктура | Jenkins, Allure TestOps, Jira, Telegram, BrowserStack, Selenoid |
-
-## Структура проекта
-
-```text
-src/test/java/qa/openfoodfacts
-|-- api
-|   |-- ApiClient.java
-|   |-- AuthApiClient.java
-|   |-- ProductsApiClient.java
-|   `-- SearchApiClient.java
-|-- config
-|-- data
-|-- drivers
-|-- helpers
-|-- mobile
-|   |-- MainScreen.java
-|   |-- ProductScreen.java
-|   `-- SearchScreen.java
-|-- models
-|   |-- products
-|   |-- search
-|   `-- users
-|-- pages
-|   |-- MainPage.java
-|   |-- ProductPage.java
-|   `-- SearchPage.java
-|-- specs
-`-- tests
-    |-- api
-    |-- mobile
-    `-- web
-```
+`Java 17` `Gradle` `JUnit 5` `Selenide` `REST Assured` `Appium` `Owner` `Lombok` `AssertJ` `Allure Report` `Jenkins` `Allure TestOps` `Jira` `Telegram` `Selenoid` `BrowserStack`
 
 ## Запуск тестов
 
-Запуск всех немобильных тестов:
-
 ```bash
 gradle clean test
-```
-
-Запуск UI тестов:
-
-```bash
+gradle clean api_test
 gradle clean ui_test
+gradle clean mobile_test
 ```
 
-Запуск UI тестов с видео в Selenoid:
+UI запуск с видео в Selenoid:
 
 ```bash
 gradle clean ui_test \
@@ -133,27 +61,7 @@ gradle clean ui_test \
   -DvideoStorageUrl=https://selenoid.autotests.cloud/video/
 ```
 
-Запуск API тестов:
-
-```bash
-gradle clean api_test
-```
-
-Запуск Android mobile тестов:
-
-```bash
-gradle clean mobile_test
-```
-
-Для локального эмулятора APK хранится только локально и не попадает в Git. Рекомендуемый путь:
-
-```text
-src/test/resources/apps/openfoodfacts-fdroid.apk
-```
-
-Перед стабильным запуском на локальном эмуляторе нужно один раз пройти первичную настройку приложения. В проекте используется `noReset=true`, поэтому подготовленное состояние приложения сохраняется между сессиями.
-
-Пример запуска на локальном эмуляторе:
+Локальный запуск Mobile тестов:
 
 ```bash
 gradle clean mobile_test \
@@ -166,95 +74,97 @@ gradle clean mobile_test \
   -DnoReset=true
 ```
 
-В Jenkins запуск мобильных тестов в BrowserStack использует учетную запись `browserstack-credentials` и автоматически загружает APK по параметру `BROWSERSTACK_APP_URL`, если `BROWSERSTACK_APP` пустой.
+APK для локального эмулятора хранится локально и не добавляется в Git.
 
-Для BrowserStack запуска используются параметры `DEVICE_NAME=Google Pixel 7` и `PLATFORM_VERSION=13.0`. Значение `Pixel_7` подходит как имя локального эмулятора, но для BrowserStack нужно указывать публичное название устройства.
+## Отчеты
 
-В BrowserStack приложение Open Food Facts может запускаться медленнее из-за состояния облачного устройства, сети или ограничений учебного аккаунта. Если Android показывает системный диалог `OpenFoodFacts isn't responding`, Screen Object нажимает `Wait` и дает приложению дополнительное время. Для стабильного подтверждения mobile-блока в проект добавлены артефакты успешного локального запуска на Android эмуляторе.
-
-## Отчеты и артефакты
-
-После локального запуска можно сформировать Allure отчет:
+После локального запуска:
 
 ```bash
 gradle allureReport
-```
-
-Открыть отчет локально:
-
-```bash
 gradle allureServe
 ```
 
-В Allure прикладываются:
+В Allure прикладываются скриншоты, page source, browser logs, Selenoid video, BrowserStack video и API request/response через custom templates.
 
-- скриншот;
-- исходный код страницы;
-- логи консоли браузера;
-- видео из Selenoid для UI запусков;
-- скриншот и видео из BrowserStack для мобильных запусков;
-- логи API запросов и ответов через кастомные шаблоны.
+### Allure Report
 
-### Примеры отчетов
+<p>
+  <img src="docs/assets/screenshots/Отчет%20Allure.png" alt="Allure report" width="760">
+</p>
 
-Allure отчет после запуска тестов:
+### Telegram
 
-![Allure отчет](docs/assets/screenshots/Отчет%20Allure.png)
+<p>
+  <img src="docs/assets/screenshots/ТГ%20отчет.png" alt="Telegram report" width="420">
+  <img src="docs/assets/screenshots/ТГ%20отчет-2.png" alt="Telegram suite report" width="420">
+</p>
 
-Telegram уведомление после Jenkins запуска:
+### Allure TestOps
 
-![Telegram отчет](docs/assets/screenshots/ТГ%20отчет.png)
+<p>
+  <img src="docs/assets/screenshots/testOps1.png" alt="Allure TestOps launch" width="760">
+</p>
 
-![Telegram отчет по набору тестов](docs/assets/screenshots/ТГ%20отчет-2.png)
+<p>
+  <img src="docs/assets/screenshots/testOps2.png" alt="Allure TestOps test cases" width="760">
+</p>
 
-Видео UI-запуска с Allure/Selenoid:
+### Mobile
 
-[Открыть видео](docs/assets/video/slnd.mp4)
+<p>
+  <img src="docs/assets/screenshots/mobile-emulator-main-screen.png" alt="Mobile main screen" width="260">
+  <img src="docs/assets/screenshots/mobile-emulator-search-result.png" alt="Mobile search result" width="260">
+</p>
 
-Локальный запуск mobile тестов на Android эмуляторе:
+Mobile тесты стабильно подтверждены локальным Android эмулятором. В BrowserStack приложение Open Food Facts может зависать на onboarding из-за состояния облачного устройства, сети или ограничений учебного аккаунта; Screen Object обрабатывает системный диалог `OpenFoodFacts isn't responding` нажатием `Wait`.
 
-![Mobile эмулятор - главный экран](docs/assets/screenshots/mobile-emulator-main-screen.png)
+### Jira
 
-![Mobile эмулятор - поиск продукта](docs/assets/screenshots/mobile-emulator-search-result.png)
+<p>
+  <img src="docs/assets/screenshots/Jira.png" alt="Jira task" width="760">
+</p>
 
-Allure TestOps после Jenkins запуска:
+### Видео UI запуска
 
-![Allure TestOps запуск](docs/assets/screenshots/testOps1.png)
+[Открыть видео из Allure/Selenoid](docs/assets/video/slnd.mp4)
 
-![Allure TestOps тест-кейсы](docs/assets/screenshots/testOps2.png)
+## Jenkins и интеграции
 
-Jira задача дипломного проекта:
+- [Jenkinsfile](Jenkinsfile) запускает выбранный `TEST_SUITE`: `api_test`, `ui_test`, `mobile_test` или `test`.
+- [notifications.json](notifications.json) используется для Telegram отчета через Allure Notifications.
+- Allure TestOps получает результаты из `build/allure-results` через `withAllureUpload`.
+- Настройки инфраструктуры описаны в [docs/jenkins.md](docs/jenkins.md) и [docs/testops-jira-checklist.md](docs/testops-jira-checklist.md).
 
-![Jira задача](docs/assets/screenshots/Jira.png)
+Секреты не должны храниться в репозитории. Для Jenkins используются credentials `katy-telegram-bot-token`, `katy-telegram-chat-id` и `browserstack-credentials`.
 
-## Jenkins, Telegram и инфраструктура
+## Структура
 
-В проекте подготовлены:
+<details>
+<summary>Показать структуру проекта</summary>
 
-- [Jenkinsfile](Jenkinsfile) для запуска выбранного набора тестов.
-- [notifications.json](notifications.json) для отправки отчета в Telegram через Allure Notifications.
-- [docs/jenkins.md](docs/jenkins.md) с настройками Jenkins, учетных записей, параметров запуска и отчетов.
-- [docs/testops-jira-checklist.md](docs/testops-jira-checklist.md) с чеклистом для Allure TestOps и Jira.
-- [docs/assets/screenshots](docs/assets/screenshots) для реальных скриншотов Jenkins, Allure, Telegram, TestOps и Jira.
-- [docs/assets/video](docs/assets/video) для демо-видео.
+```text
+src/test/java/qa/openfoodfacts
+|-- api
+|-- config
+|-- data
+|-- drivers
+|-- helpers
+|-- mobile
+|-- models
+|-- pages
+|-- specs
+`-- tests
+    |-- api
+    |-- mobile
+    `-- web
+```
 
-Секреты не хранятся в Git. Для Jenkins используются учетные записи:
-
-- `katy-telegram-bot-token`;
-- `katy-telegram-chat-id`;
-- `browserstack-credentials`.
-
-Для UI видео в Selenoid важно запускать тесты с `HEADLESS=false`, иначе видео может содержать только стартовый экран Selenoid.
-
-Telegram token хранится в Jenkins credentials и не должен попадать в Git или Jenkins console. Если token уже попал в открытый лог, его нужно перевыпустить в BotFather и обновить credential `katy-telegram-bot-token`.
-
-## Ручные тесты
-
-Ручные сценарии описаны в [docs/manual-tests.md](docs/manual-tests.md). Они покрывают сайт, API поведение и дымовые проверки Android приложения.
+</details>
 
 ## Полезные ссылки
 
-- Тестируемый продукт: [Open Food Facts](https://world.openfoodfacts.org)
-- Документация API: [Open Food Facts API](https://openfoodfacts.github.io/openfoodfacts-server/api/)
-- Android приложение: [openfoodfacts/smooth-app](https://github.com/openfoodfacts/smooth-app)
-- Последняя проверенная Android версия: `v4.23.0`, опубликована 6 января 2026 года
+- [Open Food Facts](https://world.openfoodfacts.org)
+- [Open Food Facts API](https://openfoodfacts.github.io/openfoodfacts-server/api/)
+- [Android приложение Open Food Facts](https://github.com/openfoodfacts/smooth-app)
+- [Ручные тесты](docs/manual-tests.md)

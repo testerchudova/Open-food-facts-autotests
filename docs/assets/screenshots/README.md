@@ -1,14 +1,12 @@
 # Screenshots
 
-Add real screenshots here after running tests in Jenkins, on a local Android emulator or in BrowserStack.
+Real screenshots after running tests in Jenkins and on a local Android emulator.
 
-Recommended files:
+Current files:
 
-- `jenkins-job.png`
-- `allure-overview.png`
-- `allure-mobile-attachments.png`
-- `telegram-report.png`
-- `emulator-main-screen.png`
-- `emulator-search-screen.png`
+- `Отчет Allure.png`
+- `ТГ отчет.png`
+- `mobile-emulator-main-screen.png`
+- `mobile-emulator-search-result.png`
 
 Do not add fake screenshots. The images should show the actual project run.

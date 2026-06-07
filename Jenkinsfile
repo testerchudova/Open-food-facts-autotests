@@ -10,11 +10,9 @@ pipeline {
         string(name: 'REMOTE_URL', defaultValue: 'https://selenoid.autotests.cloud/wd/hub', description: 'Remote WebDriver URL for Selenoid; used for UI tests only')
         booleanParam(name: 'ENABLE_VIDEO', defaultValue: true, description: 'Enable UI video when REMOTE_URL is configured')
         string(name: 'VIDEO_STORAGE_URL', defaultValue: 'https://selenoid.autotests.cloud/video/', description: 'Selenoid video storage URL')
-        choice(name: 'DEVICE_HOST', choices: ['emulator', 'browserstack'], description: 'Mobile execution host for mobile_test only')
-        string(name: 'DEVICE_NAME', defaultValue: 'Pixel_7', description: 'Android emulator name or BrowserStack public device name for mobile_test')
-        string(name: 'PLATFORM_VERSION', defaultValue: '11', description: 'Android platform version for mobile_test')
-        string(name: 'APPIUM_URL', defaultValue: 'http://127.0.0.1:4723/wd/hub', description: 'Appium server URL for mobile_test with DEVICE_HOST=emulator')
-        string(name: 'UDID', defaultValue: '', description: 'Optional Android emulator/device udid, for example emulator-5554')
+        choice(name: 'DEVICE_HOST', choices: ['browserstack'], description: 'Mobile execution host for mobile_test in Jenkins')
+        string(name: 'DEVICE_NAME', defaultValue: 'Google Pixel 7', description: 'BrowserStack public Android device name for mobile_test')
+        string(name: 'PLATFORM_VERSION', defaultValue: '13.0', description: 'BrowserStack Android platform version for mobile_test')
         string(name: 'BROWSERSTACK_APP', defaultValue: '', description: 'BrowserStack uploaded app id for mobile_test, for example bs://...')
         string(name: 'BROWSERSTACK_APP_URL', defaultValue: 'https://world.openfoodfacts.org/files/off.apk', description: 'Public APK URL to upload to BrowserStack when BROWSERSTACK_APP is empty')
     }
@@ -129,11 +127,9 @@ def commonArgs(String remoteUrl) {
             systemPropertyArg('remoteUrl', remoteUrl),
             systemPropertyArg('enableVideo', params.ENABLE_VIDEO),
             systemPropertyArg('videoStorageUrl', params.VIDEO_STORAGE_URL),
-            systemPropertyArg('deviceHost', params.DEVICE_HOST),
+            systemPropertyArg('deviceHost', effectiveDeviceHost()),
             systemPropertyArg('deviceName', effectiveDeviceName()),
-            systemPropertyArg('platformVersion', effectivePlatformVersion()),
-            systemPropertyArg('localUrl', effectiveAppiumUrl()),
-            systemPropertyArg('udid', params.UDID)
+            systemPropertyArg('platformVersion', effectivePlatformVersion())
     ]
 
     return args.join(' ')
@@ -146,6 +142,10 @@ def effectiveDeviceName() {
 
     String deviceName = params.DEVICE_NAME?.trim()
     return (!deviceName || deviceName == 'Pixel_7') ? 'Google Pixel 7' : deviceName
+}
+
+def effectiveDeviceHost() {
+    return params.TEST_SUITE == 'mobile_test' ? 'browserstack' : params.DEVICE_HOST
 }
 
 def effectivePlatformVersion() {
@@ -169,11 +169,6 @@ def effectiveRemoteUrl() {
     return params.TEST_SUITE == 'mobile_test' ? '' : params.REMOTE_URL
 }
 
-def effectiveAppiumUrl() {
-    String appiumUrl = params.APPIUM_URL?.trim()
-    return appiumUrl ?: 'http://127.0.0.1:4723/wd/hub'
-}
-
 def systemPropertyArg(String name, Object value) {
     return commandArg("-D${name}=${value == null ? '' : value.toString()}")
 }
@@ -188,7 +183,7 @@ def commandArg(String value) {
 }
 
 def browserStackMobileRun() {
-    return params.TEST_SUITE == 'mobile_test' && params.DEVICE_HOST == 'browserstack'
+    return params.TEST_SUITE == 'mobile_test'
 }
 
 def resolveBrowserStackApp() {
@@ -427,7 +422,7 @@ def removeRuntimeConfig(String configFile) {
 
 def executionEnvironment() {
     if (params.TEST_SUITE == 'mobile_test') {
-        return params.DEVICE_HOST == 'browserstack' ? 'BrowserStack' : 'Android Emulator'
+        return 'BrowserStack'
     }
 
     if (params.TEST_SUITE == 'ui_test') {

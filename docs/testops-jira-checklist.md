@@ -42,7 +42,7 @@ Required Jenkins parameters:
 
 For Jenkins UI runs, use `REMOTE_URL=https://<login>:<password>@selenoid.autotests.cloud/wd/hub`.
 Clear `REMOTE_URL` only when the Jenkins agent has a local browser installed.
-`api_test` and emulator `mobile_test` do not use Selenoid.
+`api_test` and `mobile_test` do not use Selenoid.
 
 Example:
 
@@ -56,10 +56,9 @@ gradle clean ui_test \
 
 ## Mobile screenshots and video
 
-For mobile tests use either:
+For mobile tests in Jenkins use BrowserStack App Automate.
 
-- local Android emulator;
-- BrowserStack App Automate.
+Local Android emulator runs can be used outside Jenkins for README screenshots.
 
 BrowserStack run requires:
 

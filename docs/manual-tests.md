@@ -1,43 +1,43 @@
-# Manual Test Cases
+# Ручные тесты
 
-## Scope
+## Область проверки
 
-Manual checks cover website, API behavior visible to a tester, and Android app smoke scenarios for Open Food Facts.
+Ручные проверки покрывают сайт Open Food Facts, поведение публичного API и дымовые сценарии Android-приложения.
 
 ## Web
 
-| ID | Title | Preconditions | Steps | Expected result | Priority |
+| ID | Название | Предусловия | Шаги | Ожидаемый результат | Приоритет |
 | --- | --- | --- | --- | --- | --- |
-| WEB-001 | Search product by barcode | Browser is opened | Open `https://world.openfoodfacts.org`, enter `3017620422003` in search, submit search | Search results contain the product with the requested barcode | High |
-| WEB-002 | Open product card | Search results are shown | Click a product card | Product page opens and contains product name, barcode, brand and nutrition section | High |
-| WEB-003 | Search by product name | Browser is opened | Search for `nutella` | Results list contains several relevant products | Medium |
-| WEB-004 | Invalid search query | Browser is opened | Search for `qa-autotest-no-product-0000000000` | Website displays an empty-result message | Medium |
-| WEB-005 | Product nutrition facts | Product page is opened | Scroll to nutrition information | Nutrition table or nutrition block is visible | High |
+| WEB-001 | Поиск продукта по штрихкоду | Открыт браузер | Открыть `https://world.openfoodfacts.org`, ввести `3017620422003` в поиск и отправить запрос | В результатах поиска отображается продукт с указанным штрихкодом | Высокий |
+| WEB-002 | Открытие карточки продукта | Отображаются результаты поиска | Нажать на карточку продукта | Открывается страница продукта, на ней видны название, штрихкод, бренд и блок с пищевой ценностью | Высокий |
+| WEB-003 | Поиск по названию продукта | Открыт браузер | Выполнить поиск по запросу `nutella` | В списке результатов отображаются релевантные продукты | Средний |
+| WEB-004 | Поиск по невалидному запросу | Открыт браузер | Выполнить поиск по запросу `qa-autotest-no-product-0000000000` | Сайт показывает сообщение об отсутствии результатов | Средний |
+| WEB-005 | Проверка пищевой ценности продукта | Открыта страница продукта | Прокрутить страницу до информации о пищевой ценности | Отображается таблица или блок с пищевой ценностью | Высокий |
 
 ## API
 
-| ID | Title | Preconditions | Request | Expected result | Priority |
+| ID | Название | Предусловия | Запрос | Ожидаемый результат | Приоритет |
 | --- | --- | --- | --- | --- | --- |
-| API-001 | Get product by barcode | Public API is available | `GET /api/v2/product/3017620422003.json` | Status code is 200, response `status` is 1, `product` is not empty | High |
-| API-002 | Get unknown product | Public API is available | `GET /api/v2/product/0000000000000.json` | Status code is 200, response `status` is 0, status text says product was not found | High |
-| API-003 | Search products | Public API is available | `GET /api/v2/search?search_terms=nutella&page_size=10` | Status code is 200, product list is not empty | High |
-| API-004 | Page size limit | Public API is available | `GET /api/v2/search?search_terms=nutella&page_size=3` | Response contains no more than 3 products | Medium |
-| API-005 | Staging product preparation | Staging credentials exist | `POST /cgi/product_jqm2.pl` with product form data | Product draft is accepted on staging | Low |
+| API-001 | Получение продукта по штрихкоду | Публичный API доступен | `GET /api/v2/product/3017620422003.json` | Status code равен `200`, в ответе `status` равен `1`, объект `product` заполнен | Высокий |
+| API-002 | Получение неизвестного продукта | Публичный API доступен | `GET /api/v2/product/0000000000000.json` | Status code равен `200`, в ответе `status` равен `0`, текст статуса сообщает, что продукт не найден | Высокий |
+| API-003 | Поиск продуктов | Публичный API доступен | `GET /api/v2/search?search_terms=nutella&page_size=10` | Status code равен `200`, список продуктов не пустой | Высокий |
+| API-004 | Ограничение размера страницы | Публичный API доступен | `GET /api/v2/search?search_terms=nutella&page_size=3` | В ответе не больше 3 продуктов | Средний |
+| API-005 | Подготовка продукта на staging | Есть учетные данные для staging | `POST /cgi/product_jqm2.pl` с form data продукта | Черновик продукта принят на staging | Низкий |
 
 ## Mobile Android
 
-| ID | Title | Preconditions | Steps | Expected result | Priority |
+| ID | Название | Предусловия | Шаги | Ожидаемый результат | Приоритет |
 | --- | --- | --- | --- | --- | --- |
-| MOB-001 | First launch | Open Food Facts app is installed | Launch app | App opens without crash and shows onboarding or main screen | High |
-| MOB-002 | Skip onboarding | Onboarding is shown | Tap skip/not now | Main screen opens | Medium |
-| MOB-003 | Search product | App is opened | Open search, enter `Nutella` | Search results contain matching product | High |
-| MOB-004 | Scanner entry point | App is opened | Find scan action on main screen | Scan action is visible and available | High |
-| MOB-005 | Camera permission | App is opened and camera permission is not granted | Tap scan action | App requests camera permission or shows permission explanation | High |
+| MOB-001 | Первый запуск приложения | Приложение Open Food Facts установлено | Запустить приложение | Приложение открывается без crash и показывает onboarding или главный экран | Высокий |
+| MOB-002 | Пропуск onboarding | Отображается onboarding | Нажать `Skip`, `Not now` или аналогичное действие пропуска | Открывается главный экран приложения | Средний |
+| MOB-003 | Поиск продукта | Приложение открыто | Открыть поиск и ввести `Nutella` | Отправляется поиск по продукту, отображается экран поиска или релевантные результаты | Высокий |
+| MOB-004 | Точка входа в сканирование | Приложение открыто | Найти действие сканирования на главном экране | Действие сканирования отображается и доступно пользователю | Высокий |
+| MOB-005 | Разрешение на камеру | Приложение открыто, разрешение на камеру не выдано | Нажать действие сканирования | Приложение запрашивает разрешение на камеру или показывает объяснение, зачем оно нужно | Высокий |
 
-## Regression Checklist
+## Регрессионный чеклист
 
-- Search works on website and mobile app.
-- Product page contains identity data: barcode, name, brand.
-- Product page contains nutrition data.
-- API product endpoint returns correct statuses for existing and unknown barcodes.
-- Allure report contains steps and attachments after automated runs.
+- Поиск работает на сайте и в мобильном приложении.
+- Страница продукта содержит основные данные: штрихкод, название, бренд.
+- Страница продукта содержит данные о пищевой ценности.
+- API product endpoint возвращает корректные статусы для существующего и неизвестного штрихкода.
+- Allure report содержит шаги и вложения после автоматизированных запусков.

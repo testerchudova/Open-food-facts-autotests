@@ -203,6 +203,12 @@ Telegram уведомление после Jenkins запуска:
 
 ![Telegram отчет](docs/assets/screenshots/ТГ%20отчет.png)
 
+Локальный запуск mobile тестов на Android эмуляторе:
+
+![Mobile эмулятор - главный экран](docs/assets/screenshots/mobile-emulator-main-screen.png)
+
+![Mobile эмулятор - поиск продукта](docs/assets/screenshots/mobile-emulator-search-result.png)
+
 ## Jenkins, Telegram и инфраструктура
 
 В проекте подготовлены:

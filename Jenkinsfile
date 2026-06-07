@@ -11,8 +11,8 @@ pipeline {
         booleanParam(name: 'ENABLE_VIDEO', defaultValue: true, description: 'Enable UI video when REMOTE_URL is configured')
         string(name: 'VIDEO_STORAGE_URL', defaultValue: 'https://selenoid.autotests.cloud/video/', description: 'Selenoid video storage URL')
         choice(name: 'DEVICE_HOST', choices: ['emulator', 'browserstack'], description: 'Mobile execution host for mobile_test only')
-        string(name: 'DEVICE_NAME', defaultValue: 'Pixel_7', description: 'Android device name for mobile_test')
-        string(name: 'PLATFORM_VERSION', defaultValue: '11', description: 'Android platform version for mobile_test')
+        string(name: 'DEVICE_NAME', defaultValue: 'Google Pixel 7', description: 'Android device name for mobile_test')
+        string(name: 'PLATFORM_VERSION', defaultValue: '13.0', description: 'Android platform version for mobile_test')
         string(name: 'BROWSERSTACK_APP', defaultValue: '', description: 'BrowserStack uploaded app id for mobile_test, for example bs://...')
         string(name: 'BROWSERSTACK_APP_URL', defaultValue: 'https://world.openfoodfacts.org/files/off.apk', description: 'Public APK URL to upload to BrowserStack when BROWSERSTACK_APP is empty')
     }
@@ -107,12 +107,12 @@ def gradleExecutable() {
 def cleanReportArtifacts() {
     if (isUnix()) {
         sh '''
-            rm -rf build/allure-results build/test-results build/reports/tests allure-report notifications-runtime.json
+            rm -rf build/allure-results build/test-results build/reports/tests allure-report notifications-runtime.json allure-notifications.log
             mkdir -p build/allure-results
         '''
     } else {
         powershell '''
-            Remove-Item "build/allure-results", "build/test-results", "build/reports/tests", "allure-report", "notifications-runtime.json" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item "build/allure-results", "build/test-results", "build/reports/tests", "allure-report", "notifications-runtime.json", "allure-notifications.log" -Recurse -Force -ErrorAction SilentlyContinue
             New-Item -ItemType Directory -Force "build/allure-results" | Out-Null
         '''
     }
@@ -356,7 +356,12 @@ def runAllureNotifications(String configFile) {
                 fi
             fi
 
-            java -DconfigFile="${configFile}" -jar "\$JAR_NAME"
+            if java -DconfigFile="${configFile}" -jar "\$JAR_NAME" > allure-notifications.log 2>&1; then
+                echo "Allure Telegram notification was sent."
+            else
+                sed -E 's#bot[0-9]+(%3A|:)[A-Za-z0-9_-]+#bot****#g' allure-notifications.log || true
+                exit 1
+            fi
         """
     } else {
         powershell """
@@ -367,7 +372,16 @@ def runAllureNotifications(String configFile) {
                 Invoke-WebRequest -Uri "https://github.com/qa-guru/allure-notifications/releases/download/4.11.0/\$jarName" -OutFile \$jarName
             }
 
-            java "-DconfigFile=${configFile}" -jar \$jarName
+            java "-DconfigFile=${configFile}" -jar \$jarName *> "allure-notifications.log"
+
+            if (\$LASTEXITCODE -eq 0) {
+                Write-Host "Allure Telegram notification was sent."
+            } else {
+                Get-Content "allure-notifications.log" | ForEach-Object {
+                    \$_ -replace 'bot[0-9]+(%3A|:)[A-Za-z0-9_-]+', 'bot****'
+                }
+                exit \$LASTEXITCODE
+            }
         """
     }
 }

@@ -35,8 +35,8 @@ Selenoid access is passed through the `REMOTE_URL` Jenkins parameter, for exampl
 | `ENABLE_VIDEO` | `true` | Enables UI video attachment when `REMOTE_URL` is set |
 | `VIDEO_STORAGE_URL` | `https://selenoid.autotests.cloud/video/` | Selenoid video storage URL |
 | `DEVICE_HOST` | `emulator`, `browserstack` | Mobile execution host, used for `mobile_test` |
-| `DEVICE_NAME` | `Pixel_7` | Android device name for `mobile_test` |
-| `PLATFORM_VERSION` | `11` | Android version for `mobile_test` |
+| `DEVICE_NAME` | `Google Pixel 7` | Android device name for `mobile_test` in BrowserStack |
+| `PLATFORM_VERSION` | `13.0` | Android version for `mobile_test` in BrowserStack |
 | `BROWSERSTACK_APP` | `bs://...` | Optional already uploaded BrowserStack app id for `mobile_test` with `DEVICE_HOST=browserstack` |
 | `BROWSERSTACK_APP_URL` | `https://world.openfoodfacts.org/files/off.apk` | Public APK URL used for automatic BrowserStack upload when `BROWSERSTACK_APP` is empty |
 
@@ -99,6 +99,10 @@ value through Jenkins environment variables. You can either:
 - set `BROWSERSTACK_APP` to an already uploaded `bs://...` app id;
 - leave `BROWSERSTACK_APP` empty and keep `BROWSERSTACK_APP_URL` filled so Jenkins uploads the APK automatically.
 
+For the current BrowserStack run use `DEVICE_NAME=Google Pixel 7` and
+`PLATFORM_VERSION=13.0`. The `Pixel_7` value is suitable for a local emulator
+name, but BrowserStack expects the public device name.
+
 BrowserStack username, access key and app id are not passed as plain Gradle
 arguments. Tests read them from `BROWSERSTACK_USER`, `BROWSERSTACK_KEY` and
 `BROWSERSTACK_APP` environment variables provided by Jenkins.
@@ -110,6 +114,7 @@ Telegram report is sent through `allure-notifications-4.11.0.jar` and `notificat
 - `katy-telegram-bot-token` and `katy-telegram-chat-id` are stored as Jenkins credentials.
 - `notifications.json` stays in Git with placeholders only.
 - During the Jenkins build, `Jenkinsfile` creates a temporary runtime config and removes it after sending the report.
+- Notification library output is redirected to `allure-notifications.log` so Telegram token is not printed in Jenkins console.
 
 Keep real Telegram tokens outside Git. If a token was committed to a public repository before, revoke it in BotFather and create a new one.
 

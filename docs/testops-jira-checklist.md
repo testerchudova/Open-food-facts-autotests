@@ -66,6 +66,8 @@ BrowserStack run requires:
 - `deviceHost=browserstack`
 - Jenkins credential `browserstack-credentials`
 - `BROWSERSTACK_APP` or `BROWSERSTACK_APP_URL`
+- `DEVICE_NAME=Google Pixel 7`
+- `PLATFORM_VERSION=13.0`
 
 Allure attachments include mobile screenshot, page source and BrowserStack video.
 

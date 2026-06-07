@@ -168,6 +168,8 @@ gradle clean mobile_test \
 
 В Jenkins запуск мобильных тестов в BrowserStack использует учетную запись `browserstack-credentials` и автоматически загружает APK по параметру `BROWSERSTACK_APP_URL`, если `BROWSERSTACK_APP` пустой.
 
+Для BrowserStack запуска используются параметры `DEVICE_NAME=Google Pixel 7` и `PLATFORM_VERSION=13.0`. Значение `Pixel_7` подходит как имя локального эмулятора, но для BrowserStack нужно указывать публичное название устройства.
+
 ## Отчеты и артефакты
 
 После локального запуска можно сформировать Allure отчет:
@@ -219,6 +221,8 @@ Telegram уведомление после Jenkins запуска:
 - `browserstack-credentials`.
 
 Для UI видео в Selenoid важно запускать тесты с `HEADLESS=false`, иначе видео может содержать только стартовый экран Selenoid.
+
+Telegram token хранится в Jenkins credentials и не должен попадать в Git или Jenkins console. Если token уже попал в открытый лог, его нужно перевыпустить в BotFather и обновить credential `katy-telegram-bot-token`.
 
 ## Ручные тесты
 

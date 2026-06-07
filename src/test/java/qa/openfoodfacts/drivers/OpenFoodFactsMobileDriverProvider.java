@@ -60,6 +60,8 @@ public class OpenFoodFactsMobileDriverProvider implements WebDriverProvider {
         options.put("projectName", "Open Food Facts autotests");
         options.put("buildName", "qa-diploma");
         options.put("sessionName", "Android smoke tests");
+        options.put("debug", true);
+        options.put("networkLogs", true);
         return options;
     }
 

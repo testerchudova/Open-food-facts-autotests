@@ -58,19 +58,14 @@ pipeline {
         stage('Run tests') {
             steps {
                 script {
-                    if (browserStackMobileRun()) {
-                        withCredentials([
-                                usernamePassword(
-                                        credentialsId: 'browserstack-credentials',
-                                        usernameVariable: 'BROWSERSTACK_USER',
-                                        passwordVariable: 'BROWSERSTACK_KEY'
-                                )
-                        ]) {
-                            env.BROWSERSTACK_APP = resolveBrowserStackApp()
-                            runGradleTests(browserStackArgs())
-                        }
-                    } else {
-                        runGradleTests(commonArgs(effectiveRemoteUrl()))
+                    withAllureUpload(
+                            name: "${env.JOB_NAME} - #${env.BUILD_NUMBER} - ${params.TEST_SUITE}",
+                            projectId: '5238',
+                            results: [[path: env.ALLURE_RESULTS]],
+                            serverId: 'allure-server',
+                            tags: "openfoodfacts,diploma,${params.TEST_SUITE}"
+                    ) {
+                        runSelectedTests()
                     }
                 }
             }
@@ -87,6 +82,23 @@ pipeline {
                 }
             }
         }
+    }
+}
+
+def runSelectedTests() {
+    if (browserStackMobileRun()) {
+        withCredentials([
+                usernamePassword(
+                        credentialsId: 'browserstack-credentials',
+                        usernameVariable: 'BROWSERSTACK_USER',
+                        passwordVariable: 'BROWSERSTACK_KEY'
+                )
+        ]) {
+            env.BROWSERSTACK_APP = resolveBrowserStackApp()
+            runGradleTests(browserStackArgs())
+        }
+    } else {
+        runGradleTests(commonArgs(effectiveRemoteUrl()))
     }
 }
 

@@ -84,20 +84,23 @@ Do not commit real Telegram tokens. Use Jenkins credentials or create a local no
 
 1. Create a project in Allure TestOps.
 2. Connect Jenkins job to the TestOps project.
+   - Server ID: `allure-server`
+   - Project ID: `5238`
 3. Add launch parameters in TestOps:
    - `TEST_SUITE`
    - `DEVICE_HOST`
    - `browser`
    - `browserVersion`
    - `platformVersion`
-4. Run Jenkins job from TestOps.
-5. Check that test cases are created from automated tests.
+4. Upload Jenkins Pipeline results through `withAllureUpload` from `build/allure-results`.
+5. Run Jenkins job from TestOps.
+6. Check that test cases are created from automated tests.
 
 ## Jira
 
-1. Create Jira task for the diploma project.
+1. Create Jira task for the diploma project: `HOMEWORK-1611`.
 2. Connect Jira integration in Allure TestOps.
-3. Link automated test cases or launch results to the Jira task.
+3. Link automated test cases to the Jira task through `@Issue("HOMEWORK-1611")`.
 4. Add final Jira screenshot to `docs/assets/screenshots`.
 
 ## Demo artifacts for README

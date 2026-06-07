@@ -2,6 +2,7 @@ package qa.openfoodfacts.tests.web;
 
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Owner;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -12,6 +13,7 @@ import static io.qameta.allure.Allure.step;
 
 @Epic("Open Food Facts")
 @Feature("Главная страница")
+@Issue("HOMEWORK-1611")
 @Owner("Katy")
 @Tag("ui")
 class MainPageTests extends WebTestBase {

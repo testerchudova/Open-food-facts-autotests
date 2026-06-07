@@ -2,6 +2,7 @@ package qa.openfoodfacts.tests.web;
 
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Owner;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import static io.qameta.allure.Allure.step;
 
 @Epic("Open Food Facts")
 @Feature("Поиск")
+@Issue("HOMEWORK-1611")
 @Owner("Katy")
 @Tag("ui")
 class SearchTests extends WebTestBase {

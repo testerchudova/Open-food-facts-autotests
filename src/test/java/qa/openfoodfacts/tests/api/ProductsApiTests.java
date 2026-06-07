@@ -2,6 +2,7 @@ package qa.openfoodfacts.tests.api;
 
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Owner;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Epic("Open Food Facts")
 @Feature("API продуктов")
+@Issue("HOMEWORK-1611")
 @Owner("Katy")
 @Tag("api")
 class ProductsApiTests {

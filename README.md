@@ -217,6 +217,10 @@ Telegram уведомление после Jenkins запуска:
 
 ![Mobile эмулятор - поиск продукта](docs/assets/screenshots/mobile-emulator-search-result.png)
 
+Jira задача дипломного проекта:
+
+![Jira задача](docs/assets/screenshots/Jira.png)
+
 ## Jenkins, Telegram и инфраструктура
 
 В проекте подготовлены:

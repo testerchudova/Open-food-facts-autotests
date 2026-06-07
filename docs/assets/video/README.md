@@ -1,12 +1,10 @@
 # Video
 
-Add real video artifacts here after running tests in Jenkins, Selenoid or BrowserStack.
+Real video artifacts after running tests in Jenkins, Selenoid or BrowserStack.
 
-Recommended files:
+Current files:
 
-- `ui-selenoid-run.mp4`
-- `mobile-browserstack-run.mp4`
-- `demo-report.gif`
+- `slnd.mp4` - UI test run video from Allure/Selenoid.
 
 UI video is attached to Allure automatically when tests are executed with remote Selenoid settings:
 

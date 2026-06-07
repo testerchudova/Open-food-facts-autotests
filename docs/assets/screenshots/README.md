@@ -6,6 +6,7 @@ Current files:
 
 - `Отчет Allure.png`
 - `ТГ отчет.png`
+- `ТГ отчет-2.png`
 - `mobile-emulator-main-screen.png`
 - `mobile-emulator-search-result.png`
 

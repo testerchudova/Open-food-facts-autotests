@@ -170,6 +170,8 @@ gradle clean mobile_test \
 
 Для BrowserStack запуска используются параметры `DEVICE_NAME=Google Pixel 7` и `PLATFORM_VERSION=13.0`. Значение `Pixel_7` подходит как имя локального эмулятора, но для BrowserStack нужно указывать публичное название устройства.
 
+В BrowserStack приложение Open Food Facts может запускаться медленнее из-за состояния облачного устройства, сети или ограничений учебного аккаунта. Если Android показывает системный диалог `OpenFoodFacts isn't responding`, Screen Object нажимает `Wait` и дает приложению дополнительное время. Для стабильного подтверждения mobile-блока в проект добавлены артефакты успешного локального запуска на Android эмуляторе.
+
 ## Отчеты и артефакты
 
 После локального запуска можно сформировать Allure отчет:
@@ -202,6 +204,12 @@ Allure отчет после запуска тестов:
 Telegram уведомление после Jenkins запуска:
 
 ![Telegram отчет](docs/assets/screenshots/ТГ%20отчет.png)
+
+![Telegram отчет по набору тестов](docs/assets/screenshots/ТГ%20отчет-2.png)
+
+Видео UI-запуска с Allure/Selenoid:
+
+[Открыть видео](docs/assets/video/slnd.mp4)
 
 Локальный запуск mobile тестов на Android эмуляторе:
 

@@ -37,6 +37,11 @@ public class MainScreen {
             AppiumBy.androidUIAutomator("new UiSelector().textContains(\"Not now\")"),
             AppiumBy.androidUIAutomator("new UiSelector().descriptionContains(\"Not now\")")
     );
+    private final List<By> waitButtons = List.of(
+            AppiumBy.androidUIAutomator("new UiSelector().text(\"Wait\")"),
+            AppiumBy.androidUIAutomator("new UiSelector().textContains(\"Wait\")"),
+            AppiumBy.androidUIAutomator("new UiSelector().descriptionContains(\"Wait\")")
+    );
     private final List<By> searchButtons = List.of(
             AppiumBy.accessibilityId("Search for a product"),
             AppiumBy.androidUIAutomator("new UiSelector().textContains(\"Search\")"),
@@ -60,6 +65,10 @@ public class MainScreen {
     public MainScreen skipOnboardingIfVisible() {
         for (int i = 0; i < 40; i++) {
             String pageSource = getWebDriver().getPageSource();
+            if (waitIfApplicationIsNotResponding(pageSource)) {
+                continue;
+            }
+
             if (pageSource.contains("Try it now!") || pageSource.contains("tap on any part of the card")) {
                 tapOnboardingHintCloseButton();
                 sleep(700);
@@ -93,6 +102,21 @@ public class MainScreen {
 
         returnToMainIfSearchScreenIsOpen();
         return this;
+    }
+
+    private boolean waitIfApplicationIsNotResponding(String pageSource) {
+        if (!pageSource.contains("isn't responding")
+                && !pageSource.contains("is not responding")
+                && !pageSource.contains("isn\u2019t responding")) {
+            return false;
+        }
+
+        if (clickFirstVisible(waitButtons)) {
+            sleep(5000);
+            return true;
+        }
+
+        return false;
     }
 
     private void returnToMainIfSearchScreenIsOpen() {
@@ -164,6 +188,8 @@ public class MainScreen {
 
     private SelenideElement firstVisible(List<By> locators) {
         for (int attempt = 0; attempt < 30; attempt++) {
+            waitIfApplicationIsNotResponding(getWebDriver().getPageSource());
+
             for (By locator : locators) {
                 try {
                     SelenideElement element = $(locator);

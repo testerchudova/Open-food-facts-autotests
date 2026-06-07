@@ -31,12 +31,14 @@ Selenoid access is passed through the `REMOTE_URL` Jenkins parameter, for exampl
 | `HEADLESS` | `false` | Headless mode for web UI tests; keep `false` for Selenoid video |
 | `BROWSER_SIZE` | `1920x1080` | Browser window size for web UI tests |
 | `BROWSER_VERSION` | `100.0` | Browser version for remote UI runs; can be empty |
-| `REMOTE_URL` | `https://<login>:<password>@selenoid.autotests.cloud/wd/hub` | Remote WebDriver URL for Selenoid; empty means local browser |
+| `REMOTE_URL` | `https://<login>:<password>@selenoid.autotests.cloud/wd/hub` | Remote WebDriver URL for Selenoid; used for UI tests only |
 | `ENABLE_VIDEO` | `true` | Enables UI video attachment when `REMOTE_URL` is set |
 | `VIDEO_STORAGE_URL` | `https://selenoid.autotests.cloud/video/` | Selenoid video storage URL |
 | `DEVICE_HOST` | `emulator`, `browserstack` | Mobile execution host, used for `mobile_test` |
-| `DEVICE_NAME` | `Google Pixel 7` | Android device name for `mobile_test` in BrowserStack |
-| `PLATFORM_VERSION` | `13.0` | Android version for `mobile_test` in BrowserStack |
+| `DEVICE_NAME` | `Pixel_7` | Android emulator name; for BrowserStack `Pixel_7` is converted to `Google Pixel 7` |
+| `PLATFORM_VERSION` | `11` | Android version; for BrowserStack `11` is converted to `13.0` for `Google Pixel 7` |
+| `APPIUM_URL` | `http://127.0.0.1:4723/wd/hub` | Appium server URL for `mobile_test` with `DEVICE_HOST=emulator` |
+| `UDID` | `emulator-5554` | Optional emulator/device id; can be empty when only one emulator is connected |
 | `BROWSERSTACK_APP` | `bs://...` | Optional already uploaded BrowserStack app id for `mobile_test` with `DEVICE_HOST=browserstack` |
 | `BROWSERSTACK_APP_URL` | `https://world.openfoodfacts.org/files/off.apk` | Public APK URL used for automatic BrowserStack upload when `BROWSERSTACK_APP` is empty |
 
@@ -87,10 +89,13 @@ Mobile tests automatically attach:
 - Page source.
 - BrowserStack video when tests are executed with `DEVICE_HOST=browserstack`.
 
-For local emulator runs, prepare the Open Food Facts app once before the Jenkins
-demo run: install the APK, complete onboarding, then run with `-DnoReset=true`.
-This keeps product smoke tests focused on the main screen and search flow rather
-than the onboarding tutorial.
+For emulator runs, the Jenkins agent must have a running Android emulator and an
+available Appium server. Use `APPIUM_URL` to point tests to that Appium server.
+If several Android devices are connected, fill `UDID`; otherwise it can stay
+empty. Prepare the Open Food Facts app once before the Jenkins demo run: install
+the APK, complete onboarding, then run with `-DnoReset=true`. This keeps product
+smoke tests focused on the main screen and search flow rather than the
+onboarding tutorial.
 
 For BrowserStack runs, the pipeline works like the previous mobile homework
 project: it prepares the app before tests and passes the resulting `bs://...`

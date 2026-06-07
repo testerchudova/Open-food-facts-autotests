@@ -128,11 +128,29 @@ def commonArgs(String remoteUrl) {
             systemPropertyArg('enableVideo', params.ENABLE_VIDEO),
             systemPropertyArg('videoStorageUrl', params.VIDEO_STORAGE_URL),
             systemPropertyArg('deviceHost', params.DEVICE_HOST),
-            systemPropertyArg('deviceName', params.DEVICE_NAME),
-            systemPropertyArg('platformVersion', params.PLATFORM_VERSION)
+            systemPropertyArg('deviceName', effectiveDeviceName()),
+            systemPropertyArg('platformVersion', effectivePlatformVersion())
     ]
 
     return args.join(' ')
+}
+
+def effectiveDeviceName() {
+    if (!browserStackMobileRun()) {
+        return params.DEVICE_NAME
+    }
+
+    String deviceName = params.DEVICE_NAME?.trim()
+    return (!deviceName || deviceName == 'Pixel_7') ? 'Google Pixel 7' : deviceName
+}
+
+def effectivePlatformVersion() {
+    if (!browserStackMobileRun()) {
+        return params.PLATFORM_VERSION
+    }
+
+    String platformVersion = params.PLATFORM_VERSION?.trim()
+    return (!platformVersion || effectiveDeviceName() == 'Google Pixel 7' && platformVersion == '11') ? '13.0' : platformVersion
 }
 
 def browserStackArgs() {

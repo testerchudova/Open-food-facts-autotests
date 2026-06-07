@@ -9,6 +9,8 @@ Current files:
 - `ТГ отчет-2.png`
 - `mobile-emulator-main-screen.png`
 - `mobile-emulator-search-result.png`
+- `testOps1.png`
+- `testOps2.png`
 - `Jira.png`
 
 Do not add fake screenshots. The images should show the actual project run.

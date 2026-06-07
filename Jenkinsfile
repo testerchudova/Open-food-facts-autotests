@@ -7,7 +7,7 @@ pipeline {
         booleanParam(name: 'HEADLESS', defaultValue: false, description: 'Run web UI tests in headless browser; keep false for Selenoid video')
         string(name: 'BROWSER_SIZE', defaultValue: '1920x1080', description: 'Browser window size for UI tests')
         string(name: 'BROWSER_VERSION', defaultValue: '', description: 'Browser version for remote UI runs; leave empty for default')
-        string(name: 'REMOTE_URL', defaultValue: 'https://selenoid.autotests.cloud/wd/hub', description: 'Remote WebDriver URL for Selenoid; used for UI tests only')
+        string(name: 'REMOTE_URL', defaultValue: 'https://user1:1234@selenoid.autotests.cloud/wd/hub', description: 'Remote WebDriver URL for Selenoid; used for UI tests only')
         booleanParam(name: 'ENABLE_VIDEO', defaultValue: true, description: 'Enable UI video when REMOTE_URL is configured')
         string(name: 'VIDEO_STORAGE_URL', defaultValue: 'https://selenoid.autotests.cloud/video/', description: 'Selenoid video storage URL')
         choice(name: 'DEVICE_HOST', choices: ['browserstack'], description: 'Mobile execution host for mobile_test in Jenkins')

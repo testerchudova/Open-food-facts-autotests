@@ -217,6 +217,12 @@ Telegram уведомление после Jenkins запуска:
 
 ![Mobile эмулятор - поиск продукта](docs/assets/screenshots/mobile-emulator-search-result.png)
 
+Allure TestOps после Jenkins запуска:
+
+![Allure TestOps запуск](docs/assets/screenshots/testOps1.png)
+
+![Allure TestOps тест-кейсы](docs/assets/screenshots/testOps2.png)
+
 Jira задача дипломного проекта:
 
 ![Jira задача](docs/assets/screenshots/Jira.png)

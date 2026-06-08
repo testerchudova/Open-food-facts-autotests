@@ -144,8 +144,38 @@ Mobile тесты стабильно подтверждены локальным
 
 ## Структура
 
+```mermaid
+flowchart LR
+    config["config<br/>Owner properties"]
+    data["data<br/>тестовые данные"]
+    api["api + specs + models<br/>REST Assured слой"]
+    web["pages<br/>Page Objects"]
+    mobile["mobile<br/>Screen Objects"]
+    tests["tests<br/>api / web / mobile"]
+    reports["Jenkins + Allure<br/>TestOps / Telegram / Jira"]
+
+    config --> api
+    config --> web
+    config --> mobile
+    data --> web
+    data --> mobile
+    api --> tests
+    web --> tests
+    mobile --> tests
+    tests --> reports
+```
+
+| Блок | Папки | Назначение |
+| --- | --- | --- |
+| API слой | `api`, `specs`, `models` | клиенты, спецификации, request/response модели |
+| UI слой | `pages` | Page Objects для сайта Open Food Facts |
+| Mobile слой | `mobile`, `drivers` | Screen Objects и настройка Android драйвера |
+| Данные и конфигурация | `data`, `config`, `src/test/resources/config` | подготовленные продукты, Owner config, properties |
+| Тесты | `tests/api`, `tests/web`, `tests/mobile` | наборы автотестов по тегам и Gradle tasks |
+| Отчеты | `helpers`, `tpl`, `docs/assets` | Allure attachments, custom templates, скриншоты и видео |
+
 <details>
-<summary>Показать структуру проекта</summary>
+<summary>Показать дерево папок</summary>
 
 ```text
 src/test/java/qa/openfoodfacts

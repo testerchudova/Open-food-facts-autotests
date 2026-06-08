@@ -13,5 +13,6 @@ Current files:
 - `testOps1.png`
 - `testOps2.png`
 - `Jira.png`
+- `Jira-1.png`
 
 Do not add fake screenshots. The images should show the actual project run.

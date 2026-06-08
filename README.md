@@ -125,6 +125,10 @@ Mobile тесты стабильно подтверждены локальным
   <img src="docs/assets/screenshots/Jira.png" alt="Jira task" width="760">
 </p>
 
+<p>
+  <img src="docs/assets/screenshots/Jira-1.png" alt="Jira links with Allure TestOps test cases and launches" width="760">
+</p>
+
 ### Видео UI запуска
 
 [Открыть видео из Allure/Selenoid](docs/assets/video/slnd.mp4)

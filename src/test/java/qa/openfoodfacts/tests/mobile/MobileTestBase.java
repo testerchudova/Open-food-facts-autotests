@@ -2,6 +2,7 @@ package qa.openfoodfacts.tests.mobile;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.logevents.SelenideLogger;
+import io.qameta.allure.Step;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,7 @@ import qa.openfoodfacts.config.MobileConfig;
 import qa.openfoodfacts.drivers.OpenFoodFactsMobileDriverProvider;
 import qa.openfoodfacts.helpers.Attach;
 
+import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.closeWebDriver;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 import static com.codeborne.selenide.WebDriverRunner.hasWebDriverStarted;
@@ -38,6 +40,11 @@ public class MobileTestBase {
             attachBrowserStackVideo();
             closeWebDriver();
         }
+    }
+
+    @Step("Запустить мобильное приложение")
+    protected void openApp() {
+        open();
     }
 
     private void attachBrowserStackVideo() {

@@ -30,8 +30,11 @@ public class OpenFoodFactsMobileDriverProvider implements WebDriverProvider {
         desiredCapabilities.setCapability("automationName", "UiAutomator2");
         desiredCapabilities.setCapability("autoGrantPermissions", true);
         desiredCapabilities.setCapability("noReset", CONFIG.noReset());
+        desiredCapabilities.setCapability("forceAppLaunch", true);
         desiredCapabilities.setCapability("adbExecTimeout", 120000);
         desiredCapabilities.setCapability("appWaitDuration", 120000);
+        desiredCapabilities.setCapability("appWaitActivity", CONFIG.appWaitActivity());
+        desiredCapabilities.setCapability("appWaitForLaunch", CONFIG.appWaitForLaunch());
         desiredCapabilities.setCapability("androidInstallTimeout", 120000);
         desiredCapabilities.setCapability("uiautomator2ServerInstallTimeout", 120000);
         desiredCapabilities.setCapability("uiautomator2ServerLaunchTimeout", 120000);

@@ -5,6 +5,9 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.config.SSLConfig;
+import io.restassured.filter.log.LogDetail;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
@@ -27,6 +30,8 @@ public class BaseSpec {
                 .addHeader("Accept-Encoding", "identity")
                 .setAccept(ContentType.JSON)
                 .addFilter(CustomApiListener.withCustomTemplates())
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
     }
 
@@ -38,6 +43,8 @@ public class BaseSpec {
                 .setAccept(ContentType.JSON)
                 .setContentType(ContentType.URLENC)
                 .addFilter(CustomApiListener.withCustomTemplates())
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
     }
 

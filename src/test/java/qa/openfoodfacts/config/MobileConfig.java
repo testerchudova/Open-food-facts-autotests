@@ -17,7 +17,7 @@ public interface MobileConfig extends Config {
     String platformName();
 
     @Key("deviceName")
-    @DefaultValue("Pixel_7")
+    @DefaultValue("Pixel_4")
     String deviceName();
 
     @Key("udid")
@@ -25,7 +25,7 @@ public interface MobileConfig extends Config {
     String udid();
 
     @Key("platformVersion")
-    @DefaultValue("11")
+    @DefaultValue("17")
     String platformVersion();
 
     @Key("noReset")
@@ -57,10 +57,18 @@ public interface MobileConfig extends Config {
     String app();
 
     @Key("appPackage")
-    @DefaultValue("org.openfoodfacts.scanner")
+    @DefaultValue("openfoodfacts.github.scrachx.openfood")
     String appPackage();
 
     @Key("appActivity")
     @DefaultValue("org.openfoodfacts.app.MainActivity")
     String appActivity();
+
+    @Key("appWaitActivity")
+    @DefaultValue("*")
+    String appWaitActivity();
+
+    @Key("appWaitForLaunch")
+    @DefaultValue("false")
+    boolean appWaitForLaunch();
 }

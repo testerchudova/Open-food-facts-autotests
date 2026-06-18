@@ -12,3 +12,5 @@ src/test/resources/apps/openfoodfacts-xapk/
 src/test/resources/config/credentials.properties
 notifications.local.json
 *.log
+docs/learning-guide-open-food-facts.md
+docs/learning-guide-open-food-facts.pdf

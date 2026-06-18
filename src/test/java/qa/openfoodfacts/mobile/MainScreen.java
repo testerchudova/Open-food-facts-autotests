@@ -2,6 +2,7 @@ package qa.openfoodfacts.mobile;
 
 import com.codeborne.selenide.SelenideElement;
 import io.appium.java_client.AppiumBy;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriverException;
@@ -62,6 +63,7 @@ public class MainScreen {
             AppiumBy.androidUIAutomator("new UiSelector().descriptionContains(\"barcode\")")
     );
 
+    @Step("Пропустить онбординг, если он показан")
     public MainScreen skipOnboardingIfVisible() {
         for (int i = 0; i < 40; i++) {
             String pageSource = getWebDriver().getPageSource();
@@ -156,6 +158,7 @@ public class MainScreen {
         ((RemoteWebDriver) getWebDriver()).perform(Collections.singletonList(tap));
     }
 
+    @Step("Открыть экран поиска")
     public SearchScreen openSearch() {
         if ($(openedSearchInput).exists()) {
             return new SearchScreen();
@@ -165,8 +168,15 @@ public class MainScreen {
         return new SearchScreen();
     }
 
+    @Step("Проверить действие сканирования на главном экране")
     public MainScreen shouldHaveScanAction() {
         firstVisible(scanButtons);
+        return this;
+    }
+
+    @Step("Проверить действие поиска на главном экране")
+    public MainScreen shouldHaveSearchAction() {
+        firstVisible(searchButtons);
         return this;
     }
 

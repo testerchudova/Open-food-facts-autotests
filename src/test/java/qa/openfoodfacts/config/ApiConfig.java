@@ -25,6 +25,6 @@ public interface ApiConfig extends Config {
     String defaultSearchTerm();
 
     @Key("userAgent")
-    @DefaultValue("OpenFoodFactsAutotests/1.0 (education project; contact: qa@example.com)")
+    @DefaultValue("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36")
     String userAgent();
 }

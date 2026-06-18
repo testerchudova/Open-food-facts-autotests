@@ -13,9 +13,6 @@ import qa.openfoodfacts.data.PreparedProductData;
 import qa.openfoodfacts.mobile.MainScreen;
 import qa.openfoodfacts.mobile.SearchScreen;
 
-import static com.codeborne.selenide.Selenide.open;
-import static io.qameta.allure.Allure.step;
-
 @Epic("Open Food Facts")
 @Feature("Поиск в Android-приложении")
 @Issue("HOMEWORK-1611")
@@ -32,9 +29,10 @@ class MobileSearchTests extends MobileTestBase {
     void mobileAppCanSearchProductPreparedByApi() {
         PreparedProduct product = PreparedProductData.defaultProduct();
 
-        step("Запустить мобильное приложение", () -> open());
-        step("Открыть экран поиска", () -> mainScreen.skipOnboardingIfVisible().openSearch());
-        step("Выполнить поиск продукта по названию", () -> searchScreen.searchFor(product.productName()));
-        step("Проверить, что поиск отправлен", () -> searchScreen.shouldHaveSubmittedSearchFor(product.productName()));
+        openApp();
+        mainScreen.skipOnboardingIfVisible()
+                .openSearch();
+        searchScreen.searchFor(product.productName())
+                .shouldHaveSubmittedSearchFor(product.productName());
     }
 }

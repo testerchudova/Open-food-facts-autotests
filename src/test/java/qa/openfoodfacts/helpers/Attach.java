@@ -49,16 +49,12 @@ public class Attach {
     @Attachment(value = "BrowserStack video", type = "text/html", fileExtension = ".html")
     public static String browserStackVideo(String sessionId) {
         String videoUrl = BrowserStackHelper.videoUrl(sessionId);
-        return "<html><body><video width='100%' height='100%' controls autoplay>"
-                + "<source src='" + videoUrl + "' type='video/mp4'>"
-                + "</video></body></html>";
+        return videoHtml(videoUrl);
     }
 
     @Attachment(value = "Selenoid video", type = "text/html", fileExtension = ".html")
     public static String selenoidVideo(String videoUrl) {
-        return "<html><body><video width='100%' height='100%' controls autoplay>"
-                + "<source src='" + videoUrl + "' type='video/mp4'>"
-                + "</video></body></html>";
+        return videoHtml(videoUrl);
     }
 
     @Attachment(value = "{attachName}", type = "video/mp4", fileExtension = ".mp4")
@@ -72,5 +68,22 @@ public class Attach {
 
     public static File lastScreenshot() {
         return Screenshots.getLastScreenshot();
+    }
+
+    private static String videoHtml(String videoUrl) {
+        String safeVideoUrl = escapeHtml(videoUrl);
+        return "<html><body>"
+                + "<p><a href='" + safeVideoUrl + "' target='_blank'>Open video in a new tab</a></p>"
+                + "<video width='100%' height='100%' controls>"
+                + "<source src='" + safeVideoUrl + "' type='video/mp4'>"
+                + "</video></body></html>";
+    }
+
+    private static String escapeHtml(String value) {
+        return value.replace("&", "&amp;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
     }
 }

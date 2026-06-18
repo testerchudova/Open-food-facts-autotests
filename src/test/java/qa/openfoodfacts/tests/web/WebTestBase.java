@@ -72,7 +72,12 @@ public class WebTestBase {
         }
 
         RemoteWebDriver driver = (RemoteWebDriver) getWebDriver();
-        String videoUrl = CONFIG.videoStorageUrl() + driver.getSessionId() + ".mp4";
+        String videoUrl = normalizedVideoStorageUrl() + driver.getSessionId() + ".mp4";
         Attach.selenoidVideo(videoUrl);
+    }
+
+    private String normalizedVideoStorageUrl() {
+        String videoStorageUrl = CONFIG.videoStorageUrl();
+        return videoStorageUrl.endsWith("/") ? videoStorageUrl : videoStorageUrl + "/";
     }
 }

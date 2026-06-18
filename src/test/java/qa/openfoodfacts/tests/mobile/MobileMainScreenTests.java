@@ -10,9 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import qa.openfoodfacts.mobile.MainScreen;
 
-import static com.codeborne.selenide.Selenide.open;
-import static io.qameta.allure.Allure.step;
-
 @Epic("Open Food Facts")
 @Feature("Главный экран Android-приложения")
 @Issue("HOMEWORK-1611")
@@ -26,8 +23,16 @@ class MobileMainScreenTests extends MobileTestBase {
     @Test
     @DisplayName("На главном экране есть действие сканирования")
     void mainScreenContainsScanAction() {
-        step("Запустить мобильное приложение", () -> open());
-        step("Пропустить онбординг, если он показан", () -> mainScreen.skipOnboardingIfVisible());
-        step("Проверить действие сканирования", () -> mainScreen.shouldHaveScanAction());
+        openApp();
+        mainScreen.skipOnboardingIfVisible()
+                .shouldHaveScanAction();
+    }
+
+    @Test
+    @DisplayName("На главном экране есть действие поиска продукта")
+    void mainScreenContainsSearchAction() {
+        openApp();
+        mainScreen.skipOnboardingIfVisible()
+                .shouldHaveSearchAction();
     }
 }

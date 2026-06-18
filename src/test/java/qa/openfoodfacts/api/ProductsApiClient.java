@@ -31,7 +31,9 @@ public class ProductsApiClient extends ApiClient {
                         .when()
                         .get("/api/v0/product/{barcode}.json", barcode)
                         .then()
-                        .spec(ProductsSpec.responseSpec(expectedStatusCode))
+                        .spec(expectedStatusCode == 200
+                                ? ProductsSpec.successResponseSpec()
+                                : ProductsSpec.responseSpec(expectedStatusCode))
                         .extract().as(ProductResponseModel.class));
         PRODUCT_CACHE.put(cacheKey, response);
         return response;
@@ -45,6 +47,7 @@ public class ProductsApiClient extends ApiClient {
                         .when()
                         .get("/api/v0/product/{barcode}.json", barcode)
                         .then()
+                        .spec(ProductsSpec.successResponseSpec())
                         .extract().response());
     }
 

@@ -51,6 +51,13 @@ gradle clean ui_test
 gradle clean mobile_test
 ```
 
+Опциональные API-сценарии включаются отдельными флагами:
+
+```bash
+gradle clean api_test -DrunOptionalApi=true
+gradle clean api_test -DrunStagingApi=true -DuserName=<staging-user> -Dpassword=<staging-password>
+```
+
 UI запуск с видео в Selenoid:
 
 ```bash
@@ -74,7 +81,24 @@ gradle clean mobile_test \
   -DnoReset=true
 ```
 
+Для локального запуска используйте AVD с ABI `x86_64`. Проверенный вариант на этом ПК: `Pixel_4`, Android `17`, `emulator-5556`; на `x86`-образе `Pixel_4_2` APK падает при старте из-за несовместимых native-библиотек.
+
 APK для локального эмулятора хранится локально и не добавляется в Git.
+
+Проверенный локальный APK:
+
+- путь: `src/test/resources/apps/openfoodfacts-fdroid.apk`;
+- версия: `OpenFoodFacts 4.23.0`, `versionCode=1576`;
+- package: `openfoodfacts.github.scrachx.openfood`;
+- источник для скачивания: [F-Droid OpenFoodFacts](https://f-droid.org/packages/openfoodfacts.github.scrachx.openfood/).
+
+## Соответствие требованиям QA.GURU
+
+- UI: 7 автотестов, несколько тестовых классов по функциональности, Page Objects, `@Step`, Allure attachments и закрытие браузера после каждого теста.
+- API: больше 5 автотестов, базовые request/response specs, DTO-модели с Lombok и `@JsonProperty`, Allure request/response templates, консольное логирование request/response, GET и POST сценарии в регулярном прогоне.
+- DELETE: выбранный публичный продукт Open Food Facts не предоставляет безопасный DELETE-сценарий для учебной автоматизации. Разрушающий DELETE не запускается в регулярном наборе, чтобы не рисковать данными реального сервиса.
+- Mobile: 3 автотеста, Owner-конфигурация для локального эмулятора и BrowserStack, Appium driver provider, Screen Objects, Allure attachments и закрытие сессии после каждого теста.
+- CI/CD: Jenkins pipeline, Allure Report, Allure TestOps upload, Telegram notification и ссылки/скриншоты в README.
 
 ## Отчеты
 
@@ -87,20 +111,20 @@ gradle allureServe
 
 В Allure прикладываются скриншоты, page source, browser logs, Selenoid video, BrowserStack video и API request/response через custom templates.
 
-### Allure Report
+### Allure Report ([скриншот](docs/assets/screenshots/Отчет%20Allure.png))
 
 <p>
   <img src="docs/assets/screenshots/Отчет%20Allure.png" alt="Allure report" width="760">
 </p>
 
-### Telegram
+### Telegram ([скриншот 1](docs/assets/screenshots/ТГ%20отчет.png), [скриншот 2](docs/assets/screenshots/ТГ%20отчет-2.png))
 
 <p>
   <img src="docs/assets/screenshots/ТГ%20отчет.png" alt="Telegram report" width="420">
   <img src="docs/assets/screenshots/ТГ%20отчет-2.png" alt="Telegram suite report" width="420">
 </p>
 
-### Allure TestOps
+### Allure TestOps ([скриншот 1](docs/assets/screenshots/testOps1.png), [скриншот 2](docs/assets/screenshots/testOps2.png))
 
 <p>
   <img src="docs/assets/screenshots/testOps1.png" alt="Allure TestOps launch" width="760">
@@ -110,7 +134,7 @@ gradle allureServe
   <img src="docs/assets/screenshots/testOps2.png" alt="Allure TestOps test cases" width="760">
 </p>
 
-### Mobile
+### Mobile ([main screen](docs/assets/screenshots/mobile-emulator-main-screen.png), [search result](docs/assets/screenshots/mobile-emulator-search-result.png))
 
 <p>
   <img src="docs/assets/screenshots/mobile-emulator-main-screen.png" alt="Mobile main screen" width="260">
@@ -119,7 +143,7 @@ gradle allureServe
 
 Mobile тесты стабильно подтверждены локальным Android эмулятором. В BrowserStack приложение Open Food Facts может зависать на onboarding из-за состояния облачного устройства, сети или ограничений учебного аккаунта; Screen Object обрабатывает системный диалог `OpenFoodFacts isn't responding` нажатием `Wait`.
 
-### Jira
+### Jira ([задача](docs/assets/screenshots/Jira.png), [связи](docs/assets/screenshots/Jira-1.png))
 
 <p>
   <img src="docs/assets/screenshots/Jira.png" alt="Jira task" width="760">
@@ -129,11 +153,11 @@ Mobile тесты стабильно подтверждены локальным
   <img src="docs/assets/screenshots/Jira-1.png" alt="Jira links with Allure TestOps test cases and launches" width="760">
 </p>
 
-### Видео UI запуска
+### Видео UI запуска ([скачать MP4](https://github.com/testerchudova/Open-food-facts-autotests/raw/main/docs/assets/video/slnd.mp4))
 
-[Открыть видео из Allure/Selenoid](docs/assets/video/slnd.mp4)
+[Локальная копия видео](docs/assets/video/slnd.mp4) хранится в `docs/assets/video`, а ссылка выше открывает raw-файл из GitHub.
 
-## Jenkins и интеграции
+## Jenkins и интеграции ([pipeline](Jenkinsfile), [настройка](docs/jenkins.md), [TestOps/Jira чеклист](docs/testops-jira-checklist.md))
 
 - [Jenkinsfile](Jenkinsfile) запускает выбранный `TEST_SUITE`: `api_test`, `ui_test`, `mobile_test` или `test`.
 - [notifications.json](notifications.json) используется для Telegram отчета через Allure Notifications.

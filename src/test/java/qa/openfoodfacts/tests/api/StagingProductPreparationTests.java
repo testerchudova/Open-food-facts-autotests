@@ -4,10 +4,10 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Owner;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import qa.openfoodfacts.api.ProductsApiClient;
 import qa.openfoodfacts.models.products.ProductUpdateRequestModel;
 
@@ -27,7 +27,7 @@ class StagingProductPreparationTests {
     private final ProductsApiClient productsApiClient = new ProductsApiClient();
 
     @Test
-    @Disabled("Требуются staging-учетные данные в src/test/resources/config/credentials.properties")
+    @EnabledIfSystemProperty(named = "runStagingApi", matches = "true")
     @DisplayName("Черновик продукта можно подготовить на staging через API")
     void productDraftCanBePreparedOnStagingThroughApi() {
         String barcode = "200000" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMddHHmmss"));

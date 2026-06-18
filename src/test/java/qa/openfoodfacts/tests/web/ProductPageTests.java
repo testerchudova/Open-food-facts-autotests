@@ -11,8 +11,6 @@ import qa.openfoodfacts.data.PreparedProduct;
 import qa.openfoodfacts.data.PreparedProductData;
 import qa.openfoodfacts.pages.MainPage;
 
-import static io.qameta.allure.Allure.step;
-
 @Epic("Open Food Facts")
 @Feature("Страница продукта")
 @Issue("HOMEWORK-1611")
@@ -23,16 +21,30 @@ class ProductPageTests extends WebTestBase {
     private final MainPage mainPage = new MainPage();
 
     @Test
-    @DisplayName("Страница продукта отображает данные, подготовленные через API")
-    void productPageDisplaysPreparedProductData() {
+    @DisplayName("Страница продукта отображает штрихкод из API")
+    void productPageDisplaysPreparedProductBarcode() {
         PreparedProduct product = PreparedProductData.defaultProduct();
 
-        step("Открыть страницу продукта по штрихкоду из API-данных", () ->
-                mainPage.openProductByBarcode(product.barcode()));
-        step("Проверить штрихкод продукта", () ->
-                mainPage.openProductByBarcode(product.barcode()).shouldContainBarcode(product.barcode()));
-        step("Проверить бренд продукта", () ->
-                mainPage.openProductByBarcode(product.barcode()).shouldContainBrand(product.brand()));
+        mainPage.openProductByBarcode(product.barcode())
+                .shouldContainBarcode(product.barcode());
+    }
+
+    @Test
+    @DisplayName("Страница продукта отображает бренд из API")
+    void productPageDisplaysPreparedProductBrand() {
+        PreparedProduct product = PreparedProductData.defaultProduct();
+
+        mainPage.openProductByBarcode(product.barcode())
+                .shouldContainBrand(product.brand());
+    }
+
+    @Test
+    @DisplayName("Страница продукта отображает название из API")
+    void productPageDisplaysPreparedProductName() {
+        PreparedProduct product = PreparedProductData.defaultProduct();
+
+        mainPage.openProductByBarcode(product.barcode())
+                .shouldContainProductName(product.productName());
     }
 
     @Test
@@ -40,8 +52,7 @@ class ProductPageTests extends WebTestBase {
     void productPageContainsNutritionInformation() {
         PreparedProduct product = PreparedProductData.defaultProduct();
 
-        step("Открыть страницу продукта", () -> mainPage.openProductByBarcode(product.barcode()));
-        step("Проверить блок с информацией о питательности", () ->
-                mainPage.openProductByBarcode(product.barcode()).shouldContainNutritionBlock());
+        mainPage.openProductByBarcode(product.barcode())
+                .shouldContainNutritionBlock();
     }
 }
